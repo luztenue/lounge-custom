@@ -57,6 +57,31 @@ fun pivotSpec(pivotPx: Float): BringIntoViewSpec {
 }
 
 /**
+ * Viewport-aware scrolling for vertical Home rows: only scrolls when the focused row
+ * would fall above [topBoundPx] or below [containerSize - bottomPaddingPx], keeping
+ * upper rows visible until you actually move to an off-screen row.
+ */
+@OptIn(ExperimentalFoundationApi::class)
+@Composable
+fun keepVisibleSpec(topBoundPx: Float, bottomPaddingPx: Float = 24f): BringIntoViewSpec {
+    val spec: AnimationSpec<Float> = LoungeTheme.motion.travel()
+    return remember(topBoundPx, bottomPaddingPx, spec) {
+        object : BringIntoViewSpec {
+            override val scrollAnimationSpec: AnimationSpec<Float> = spec
+            override fun calculateScrollDistance(offset: Float, size: Float, containerSize: Float): Float {
+                val bottomBound = (containerSize - bottomPaddingPx).coerceAtLeast(topBoundPx)
+                val distance = when {
+                    offset < topBoundPx -> offset - topBoundPx
+                    offset + size > bottomBound -> (offset + size) - bottomBound
+                    else -> 0f
+                }
+                return if (kotlin.math.abs(distance) < 0.5f) 0f else distance
+            }
+        }
+    }
+}
+
+/**
  * Builds every row that is off screen in idle time, nearest the viewport first and one at a time,
  * since requests made together are not run in the order they were made. Together with
  * [keptOnceMeasured] the whole home is built soon after it opens, so a move between rows builds

@@ -558,7 +558,7 @@ fun HomeScreen(core: CoreClient, platform: AndroidPlatform, prefs: Prefs, uiPref
                 val collapsedPx = with(density) { StageCollapsedHeight.toPx() }
                 val belowStage = remember(collapsedPx) { TopInsetShape(collapsedPx) }
                 BandRise(state, firstRowId)
-                CompositionLocalProvider(LocalBringIntoViewSpec provides pivotSpec(collapsedPx + headerPx)) {
+                CompositionLocalProvider(LocalBringIntoViewSpec provides keepVisibleSpec(collapsedPx, headerPx)) {
                     LazyColumn(
                         state = listState,
                         // Room for the lowered Stage above the first row, and enough below the last row for it to reach the focus line.
