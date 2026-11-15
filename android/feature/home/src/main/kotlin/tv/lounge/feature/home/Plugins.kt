@@ -58,6 +58,8 @@ import androidx.compose.ui.text.input.TransformedText
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.em
+import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.tv.material3.Text
 import coil3.compose.AsyncImage
@@ -373,11 +375,11 @@ private fun AskCard(ask: PluginAsk) {
         Text(ask.say, style = LoungeTheme.typography.meta, color = colors.houselight)
         return
     }
-    Row(horizontalArrangement = Arrangement.spacedBy(24.dp), verticalAlignment = Alignment.CenterVertically) {
+    Row(horizontalArrangement = Arrangement.spacedBy(16.dp), verticalAlignment = Alignment.CenterVertically) {
         ask.qrPngPath?.let { path ->
-            AsyncImage(model = path, contentDescription = null, modifier = Modifier.size(200.dp).clip(RoundedCornerShape(12.dp)))
+            AsyncImage(model = path, contentDescription = null, modifier = Modifier.size(152.dp).clip(RoundedCornerShape(12.dp)))
         }
-        Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+        Column(modifier = Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(8.dp)) {
             Text(if (link != null) "Inicia sesión en tu celular" else "Iniciar sesión", style = LoungeTheme.typography.title, color = colors.houselight)
             // With a page to open, the code follows it; without one, the plugin says where the code goes.
             val where = when {
@@ -386,7 +388,14 @@ private fun AskCard(ask: PluginAsk) {
                 else -> "Escanea con tu cámara o abre el enlace en Control desde el móvil" + if (ask.code != null) " e ingresa:" else ""
             }
             where?.let { Text(it, style = LoungeTheme.typography.meta, color = colors.dust) }
-            ask.code?.let { Text(it, style = LoungeTheme.typography.displayL, color = colors.limelight, maxLines = 1) }
+            ask.code?.let {
+                Text(
+                    it,
+                    style = LoungeTheme.typography.displayL.copy(fontSize = 24.sp, lineHeight = 28.sp, letterSpacing = 0.04.em),
+                    color = colors.limelight,
+                    maxLines = 2,
+                )
+            }
             if (link != null) ask.after?.let { Text(it, style = LoungeTheme.typography.caption, color = colors.dust) }
         }
     }
@@ -417,7 +426,7 @@ internal fun shortHelp(text: String): String {
     val trimmed = text.trim()
     if (trimmed.length <= SHORT_HELP) return trimmed
     val end = Regex("""[.!?](?=\s+["“‘(]?[A-Z0-9])""").find(trimmed)?.range?.last ?: return trimmed
-    return trimmed.substring(0, end + 1) + " Your phone shows the full steps."
+    return trimmed.substring(0, end + 1) + " En tu celular ves los pasos completos."
 }
 
 /**
