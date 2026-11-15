@@ -125,7 +125,7 @@ fun TopBar(
             if (showGuide) TopBarButton(LoungeIcons.Guide, "TV guide", onGuide, focus, focus.guide)
             if (showTvControls) TopBarButton(LoungeIcons.Tv, "TV controls", onTvControls, focus, focus.tvControls)
             if (nowPlaying != null) NowPlayingChip(nowPlaying, onNowPlaying, focus)
-            TopBarButton(LoungeIcons.Settings, "Settings", onSettings, focus, focus.settings)
+            TopBarButton(LoungeIcons.Settings, "Ajustes", onSettings, focus, focus.settings)
             Spacer(Modifier.width(12.dp))
             Clock()
         }

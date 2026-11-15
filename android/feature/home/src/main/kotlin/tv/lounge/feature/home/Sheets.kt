@@ -403,13 +403,13 @@ fun QuickSettingsSheet(
     val returnTo = cameFrom?.takeIf { it in pages }
     fun focusFor(page: Overlay?) = firstFocus.takeIf { page == returnTo }
 
-    SheetHeading("Settings")
+    SheetHeading("Ajustes")
     Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-        SheetGroup("Home screen")
+        SheetGroup("Pantalla de inicio")
         SheetRow(
             icon = LoungeIcons.Rows,
-            title = "Rows",
-            subtitle = "Show, hide and move rows",
+            title = "Filas",
+            subtitle = "Mostrar, ocultar y mover filas",
             value = rowsSummary,
             onClick = onRows,
             focusRequester = focusFor(Overlay.Rows) ?: focusFor(null),
@@ -418,9 +418,9 @@ fun QuickSettingsSheet(
         val at = steps.indexOf(recentApps).let { if (it < 0) 1 else it }
         SheetRow(
             icon = LoungeIcons.Apps,
-            title = "Your apps",
-            subtitle = "Pinned apps, then recent ones",
-            value = if (recentApps == 0) "Pinned only" else "$recentApps recent",
+            title = "Tus aplicaciones",
+            subtitle = "Apps fijadas, luego las recientes",
+            value = if (recentApps == 0) "Solo fijadas" else "$recentApps recientes",
             onClick = { sounds0?.tick(); onSetRecentApps(steps[(at + 1) % steps.size]) },
             onCycle = { by -> sounds0?.tick(); onSetRecentApps(steps[(at + by).mod(steps.size)]) },
         )
@@ -435,15 +435,15 @@ fun QuickSettingsSheet(
         )
         SheetRow(
             icon = LoungeIcons.Guide,
-            title = "Channels from apps",
-            subtitle = "Rows that apps on this TV publish",
+            title = "Canales de aplicaciones",
+            subtitle = "Filas que publican las apps del TV",
             value = if (enabledChannels == 0) "None" else "$enabledChannels on",
             onClick = onChannels,
             focusRequester = focusFor(Overlay.Channels),
         )
         SheetRow(
             icon = SettingsGlyphs.Plugin,
-            title = "Plugins",
+            title = "Complementos y Extensiones",
             subtitle = "Rows, channels and guide data from your services",
             value = if (enabledPlugins == 0) "None on" else "$enabledPlugins on",
             onClick = onPlugins,
@@ -454,7 +454,7 @@ fun QuickSettingsSheet(
         SheetGroup("Look and sound")
         SheetRow(
             icon = LoungeIcons.Theme,
-            title = "Theme",
+            title = "Tema visual",
             value = theme.title,
             onClick = { sounds0?.tick(); onSetTheme(theme.step(1)) },
             onCycle = { by -> sounds0?.tick(); onSetTheme(theme.step(by)) },
@@ -471,7 +471,7 @@ fun QuickSettingsSheet(
         )
         SheetRow(
             icon = LoungeIcons.Frame,
-            title = "Screensaver",
+            title = "Salvapantallas",
             value = saverName,
             accent = if (saverName == "Lounge") colors.signal else colors.dust,
             onClick = onAmbient,
@@ -536,7 +536,7 @@ fun QuickSettingsSheet(
         )
         SheetRow(
             icon = LoungeIcons.Phone,
-            title = "Phone companion",
+            title = "Control desde el móvil",
             value = if (companionOn) "On" else "Off",
             accent = if (companionOn) colors.signal else colors.dust,
             onClick = onCompanion,
@@ -766,7 +766,7 @@ fun CompanionSheet(core: CoreClient, enabled: Boolean, onSetEnabled: (Boolean) -
     val running = enabled && status?.running == true
     SheetRow(
         icon = LoungeIcons.Phone,
-        title = "Phone companion",
+        title = "Control desde el móvil",
         subtitle = if (enabled) null else "Turn it on to pair a phone",
         value = if (enabled) "On" else "Off",
         accent = if (running) colors.signal else colors.dust,

@@ -74,12 +74,12 @@ object Dimens {
     val tileRadius: Dp = 12.dp
     val stageRadius: Dp = 20.dp
     val sheetWidth: Dp = 640.dp
-    val stageArtworkWidth: Dp = 1120.dp
-    val stageArtworkHeight: Dp = 630.dp
-    val playbillWidth: Dp = 560.dp
-    val collapsedStageHeight: Dp = 200.dp
-    val stripTileWidth: Dp = 232.dp
-    val stripTileHeight: Dp = 130.dp
+    val stageArtworkWidth: Dp = 672.dp
+    val stageArtworkHeight: Dp = 378.dp
+    val playbillWidth: Dp = 400.dp
+    val collapsedStageHeight: Dp = 130.dp
+    val stripTileWidth: Dp = 160.dp
+    val stripTileHeight: Dp = 90.dp
     val glowRadius: Dp = 32.dp
     val spillRadius: Dp = 1100.dp
 }

@@ -1,0 +1,75 @@
+name: Build Custom Lounge APK
+
+on:
+  push:
+    branches: [ main, master ]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    name: Build Custom Spanish APK
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 21
+
+      - uses: gradle/actions/setup-gradle@v3
+
+      - uses: pnpm/action-setup@v3
+        with:
+          version: 10
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: pnpm
+          cache-dependency-path: companion/pnpm-lock.yaml
+
+      - name: Install Companion Dependencies and Build
+        working-directory: companion
+        run: |
+          pnpm install --frozen-lockfile
+          pnpm build
+
+      - name: Setup Rust & Targets
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: aarch64-linux-android, armv7-linux-androideabi, wasm32-unknown-unknown
+
+      - name: Install cargo-ndk
+        run: cargo install cargo-ndk --version 4.1.2 --locked
+
+      - name: Install Android NDK
+        run: |
+          yes | "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" --licenses > /dev/null
+          "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" --install "ndk;27.2.12479018" > /dev/null
+          echo "ANDROID_NDK_HOME=$ANDROID_HOME/ndk/27.2.12479018" >> "$GITHUB_ENV"
+
+      - name: Build Built-in Plugins
+        run: |
+          chmod +x tools/plugins/build.sh
+          tools/plugins/build.sh
+
+      - name: Assemble Release APK
+        working-directory: android
+        run: ./gradlew :app:assembleRelease
+
+      - name: Locate and Rename APK
+        run: |
+          mkdir -p output
+          find android/app/build/outputs/apk -name "*.apk" -exec cp {} output/Lounge-Custom-ES.apk \;
+          ls -la output/
+
+      - name: Upload Custom APK Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: Lounge-Custom-ES
+          path: output/Lounge-Custom-ES.apk
+          if-no-files-found: error

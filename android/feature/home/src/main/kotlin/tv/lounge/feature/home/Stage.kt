@@ -831,14 +831,14 @@ private fun PlaybillPart(spotlight: StageSpotlight, delayMs: Int = 0, content: @
 private fun EmptyPlaybill(indexed: Boolean, onStart: () -> Unit, startFocus: FocusRequester, interactive: Boolean) {
     val colors = LoungeTheme.colors
     Column(Modifier.fillMaxSize().padding(bottom = 6.dp), verticalArrangement = Arrangement.Bottom) {
-        Text("Your home screen", style = LoungeTheme.typography.meta, color = colors.dust)
+        Text("Tu pantalla de inicio", style = LoungeTheme.typography.meta, color = colors.dust)
         Spacer(Modifier.height(16.dp))
         if (indexed) {
-            Text("Let's set up your home screen", style = LoungeTheme.typography.displayXl, color = colors.limelight, maxLines = 3)
+            Text("Vamos a configurar tu pantalla de inicio", style = LoungeTheme.typography.displayXl, color = colors.limelight, maxLines = 3)
             Spacer(Modifier.height(16.dp))
-            Text("A few quick steps, then your apps and shows appear here.", style = LoungeTheme.typography.meta, color = colors.dust)
+            Text("Unos breves pasos y tus aplicaciones aparecerán aquí.", style = LoungeTheme.typography.meta, color = colors.dust)
             Spacer(Modifier.height(24.dp))
-            LoungeButton("Start", onClick = onStart, enabled = interactive, focusRequester = startFocus)
+            LoungeButton("Comenzar", onClick = onStart, enabled = interactive, focusRequester = startFocus)
         } else {
             Text("Setting up your home screen", style = LoungeTheme.typography.displayXl, color = colors.limelight, maxLines = 2)
             Spacer(Modifier.height(16.dp))
