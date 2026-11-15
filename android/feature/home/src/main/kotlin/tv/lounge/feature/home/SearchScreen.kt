@@ -166,7 +166,7 @@ fun SearchScreen(
             Modifier
                 .fillMaxSize()
                 .background(colors.velvet)
-                .semantics { paneTitle = "Search" }
+                .semantics { paneTitle = "Buscar" }
                 .onPreviewKeyEvent { e ->
                     if (e.isBack() && e.type == KeyEventType.KeyUp && !fieldFocused) { onClose(); true } else false
                 }
@@ -189,7 +189,7 @@ fun SearchScreen(
                             Icon(LoungeIcons.Search, contentDescription = null, tint = colors.dust, modifier = Modifier.size(40.dp))
                             Box(Modifier.weight(1f)) {
                                 if (query.isEmpty()) {
-                                    Text("Search your TV", style = LoungeTheme.typography.displayL, color = colors.dust)
+                                    Text("Buscar en tu TV", style = LoungeTheme.typography.displayL, color = colors.dust)
                                 }
                                 BasicTextField(
                                     value = field,
@@ -210,16 +210,16 @@ fun SearchScreen(
                                             fieldFocused = it.isFocused
                                             if (it.isFocused) lastResult.tileId = null
                                         }
-                                        .semantics { contentDescription = "Search your TV" },
+                                        .semantics { contentDescription = "Buscar en tu TV" },
                                 )
                             }
                         }
                         Hairline(Modifier.fillMaxWidth())
                         Text(
                             when {
-                                query.isBlank() -> "Type with the remote. Results update as you type."
-                                results.isEmpty() -> "Nothing matches “$query” yet."
-                                else -> "The keyboard's search key, or Down, takes you to the results."
+                                query.isBlank() -> "Escribe con el control remoto. Los resultados se actualizan al instante."
+                                results.isEmpty() -> "No hay coincidencias para “$query”."
+                                else -> "Pulsa Buscar en el teclado, o Abajo, para ir a los resultados."
                             },
                             style = LoungeTheme.typography.meta,
                             color = colors.dust,
@@ -281,7 +281,7 @@ internal fun search(snapshot: HomeSnapshot, query: String): List<CoreRow> {
     val home = snapshot.rows + snapshot.hiddenRows
     val apps = (home.filter { it.id == "apps" }.flatMap { it.tiles } + snapshot.allApps).distinctBy { it.id }
     val sources = buildList {
-        add(CoreRow(id = "allapps", title = "Apps", kind = TileKind.APP_BANNER, size = RowSize.M, badge = null, tiles = apps, note = null))
+        add(CoreRow(id = "allapps", title = "Aplicaciones", kind = TileKind.APP_BANNER, size = RowSize.M, badge = null, tiles = apps, note = null))
         continueRow(snapshot, home.firstOrNull { it.id == "continue" })?.let(::add)
         addAll(home.filter { it.id != "apps" && it.id != "continue" && !it.id.startsWith("notice:") })
     }
@@ -345,7 +345,7 @@ internal fun matchScore(title: String, subtitle: String?, tokens: List<String>):
 private fun continueRow(snapshot: HomeSnapshot, row: CoreRow?): CoreRow? {
     val tiles = (snapshot.stage.strip.filter { it.provider != null } + row?.tiles.orEmpty().filter { !it.id.startsWith("notice:") }).distinctBy { it.id }
     if (tiles.isEmpty()) return null
-    return CoreRow(id = "continue", title = "Continue watching", kind = TileKind.LANDSCAPE, size = RowSize.M, badge = null, tiles = tiles, note = null)
+    return CoreRow(id = "continue", title = "Continuar viendo", kind = TileKind.LANDSCAPE, size = RowSize.M, badge = null, tiles = tiles, note = null)
 }
 
 /** Before anything is typed: the head of Continue watching, then Your apps, as one row each. */
@@ -355,7 +355,7 @@ private fun recentlyOpened(snapshot: HomeSnapshot): List<CoreRow> {
         out += it.copy(id = "recent:continue", tiles = it.tiles.take(6))
     }
     snapshot.rows.firstOrNull { it.id == "apps" && it.tiles.any { t -> !t.id.startsWith("control:") } }?.let {
-        out += it.copy(id = "recent:apps", title = "Your apps", tiles = it.tiles.filter { t -> !t.id.startsWith("control:") }.take(6))
+        out += it.copy(id = "recent:apps", title = "Tus aplicaciones", tiles = it.tiles.filter { t -> !t.id.startsWith("control:") }.take(6))
     }
     return out
 }

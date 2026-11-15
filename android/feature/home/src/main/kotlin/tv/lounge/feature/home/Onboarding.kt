@@ -182,7 +182,7 @@ fun OnboardingScreen(
                                 focusRequester = primaryFocus,
                             )
                             if (step in 1 until STEPS - 1) {
-                                LoungeButton(label = "Skip", onClick = { next() }, kind = ButtonKind.Secondary)
+                                LoungeButton(label = "Omitir", onClick = { next() }, kind = ButtonKind.Secondary)
                             }
                         }
                         Spacer(Modifier.height(28.dp))
@@ -416,7 +416,7 @@ private fun StepPower(power: PowerSetup, context: Context, choiceFocus: FocusReq
         )
         SheetRow(
             icon = SettingsGlyphs.Home,
-            title = "Make Lounge the home screen",
+            title = "Hacer a Lounge pantalla de inicio",
             subtitle = homeFailed,
             subtitleLines = WHOLE,
             value = when {
@@ -482,7 +482,7 @@ private fun StepPhone(core: CoreClient, prefs: Prefs, uiPrefs: Prefs.UiPrefs, ch
     )
     SheetRow(
         icon = LoungeIcons.Phone,
-        title = "Phone companion",
+        title = "Control desde el móvil",
         value = if (on) "On" else "Off",
         accent = if (on) colors.signal else colors.dust,
         onClick = {
@@ -503,8 +503,8 @@ private fun StepDone() {
     val colors = LoungeTheme.colors
     Heading("That's the house", "Press Home any time to come back to the Stage. Long-press a tile for its menu, Settings has the essentials, and the rest is on your phone.")
     Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
-        Text("Up from the Stage reaches Search, the TV guide and Settings.", style = LoungeTheme.typography.meta, color = colors.dust)
-        Text("Back always goes up one level; from the rows it returns to the Stage.", style = LoungeTheme.typography.meta, color = colors.dust)
+        Text("Arriba desde la portada accedes a Buscar, Guía de TV y Ajustes.", style = LoungeTheme.typography.meta, color = colors.dust)
+        Text("Atrás sube un nivel; desde las filas regresa a la portada.", style = LoungeTheme.typography.meta, color = colors.dust)
     }
 }
 
@@ -572,7 +572,7 @@ private fun PhoneArt(core: CoreClient, uiPrefs: Prefs.UiPrefs) {
                 AsyncImage(model = p.qrPngPath, contentDescription = "Pairing code", modifier = Modifier.fillMaxSize())
             }
             Spacer(Modifier.height(24.dp))
-            Text("Or type this code", style = LoungeTheme.typography.meta, color = colors.dust)
+            Text("O escribe este código", style = LoungeTheme.typography.meta, color = colors.dust)
             Spacer(Modifier.height(6.dp))
             Text(p.code.chunked(3).joinToString(" "), style = LoungeTheme.typography.displayL, color = colors.limelight)
             Spacer(Modifier.height(8.dp))

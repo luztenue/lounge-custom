@@ -101,11 +101,11 @@ fun PluginsSheet(core: CoreClient, onOpen: (String) -> Unit, firstFocus: FocusRe
     val list = plugins
     // Back from a plugin's page puts focus on that plugin, if it is still there.
     val returnTo = (cameFrom as? Overlay.PluginDetail)?.id?.takeIf { id -> list.orEmpty().any { it.id == id } }
-    SheetHeading("Plugins", "They add rows, channels and guide data from your services.")
+    SheetHeading("Complementos (Plugins)", "Agregan filas, canales y guía desde tus servicios.")
     if (list == null) {
-        Text("Loading…", style = LoungeTheme.typography.meta, color = colors.dust)
+        Text("Cargando…", style = LoungeTheme.typography.meta, color = colors.dust)
     } else if (list.isEmpty()) {
-        Text("No plugins installed. They install from the phone companion: on your phone, open Plugins.", style = LoungeTheme.typography.meta, color = colors.dust)
+        Text("No hay complementos instalados. Se instalan desde Control desde el móvil.", style = LoungeTheme.typography.meta, color = colors.dust)
     } else {
         Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
             list.forEachIndexed { i, p ->
@@ -124,7 +124,7 @@ fun PluginsSheet(core: CoreClient, onOpen: (String) -> Unit, firstFocus: FocusRe
             }
         }
     }
-    SheetFootnote("Each plugin can reach only the places it names, and sees only its own settings.", "More plugins install from the phone companion.")
+    SheetFootnote("Cada complemento accede solo a sus fuentes y ajustes propios.", "Puedes instalar más desde tu celular.")
 }
 
 /** A glyph for what a plugin brings, for one with no app of its own on the TV. */
@@ -186,12 +186,12 @@ fun PluginDetailSheet(core: CoreClient, pluginId: String, onRemoved: () -> Unit,
     val live = LocalSwapSlotActive.current
     LaunchedEffect(loaded) { if (loaded && live.value) firstFocus.requestWhenReady() }
     if (!loaded) {
-        Text("Loading…", style = LoungeTheme.typography.meta, color = colors.dust)
+        Text("Cargando…", style = LoungeTheme.typography.meta, color = colors.dust)
         return
     }
     val p = info ?: run {
-        SheetHeading("Plugin", "This plugin is no longer installed.")
-        SheetRow(icon = SettingsGlyphs.Plugin, title = "Back to Plugins", onClick = onRemoved, focusRequester = firstFocus)
+        SheetHeading("Complemento", "Este complemento ya no está instalado.")
+        SheetRow(icon = SettingsGlyphs.Plugin, title = "Volver a Complementos", onClick = onRemoved, focusRequester = firstFocus)
         return
     }
 
@@ -213,7 +213,7 @@ fun PluginDetailSheet(core: CoreClient, pluginId: String, onRemoved: () -> Unit,
         }
     }
 
-    SheetHeading(p.name, "Version ${p.version}" + if (p.publisherName.isNotEmpty()) ", by ${p.publisherName}" else "")
+    SheetHeading(p.name, "Versión ${p.version}" + if (p.publisherName.isNotEmpty()) ", por ${p.publisherName}" else "")
     if (p.description.isNotEmpty()) {
         Text(p.description, style = LoungeTheme.typography.meta, color = colors.dust)
         Spacer(Modifier.height(20.dp))
@@ -230,7 +230,7 @@ fun PluginDetailSheet(core: CoreClient, pluginId: String, onRemoved: () -> Unit,
         if (held) {
             SheetRow(
                 icon = LoungeIcons.Power,
-                title = "Allow and turn on",
+                title = "Permitir y activar",
                 subtitle = "It can then reach ${joined(p.updateAsksToReach)} as well",
                 subtitleLines = WHOLE,
                 accent = colors.houselight,
@@ -249,7 +249,7 @@ fun PluginDetailSheet(core: CoreClient, pluginId: String, onRemoved: () -> Unit,
         }
         if (p.settings.isNotEmpty()) {
             Spacer(Modifier.height(8.dp))
-            Text("Settings", style = LoungeTheme.typography.meta, color = colors.dust)
+            Text("Ajustes", style = LoungeTheme.typography.meta, color = colors.dust)
             p.settings.forEach { s ->
                 SettingField(
                     setting = s,
@@ -263,8 +263,8 @@ fun PluginDetailSheet(core: CoreClient, pluginId: String, onRemoved: () -> Unit,
             if (!p.enabled && !held) {
                 SheetRow(
                     icon = LoungeIcons.Power,
-                    title = "Turn on ${p.name}",
-                    subtitle = missing?.let { "Fill in ${it.label} first" },
+                    title = "Activar ${p.name}",
+                    subtitle = missing?.let { "Completa primero: ${it.label}" },
                     accent = colors.houselight,
                     onClick = { switch(true) },
                 )
@@ -275,7 +275,7 @@ fun PluginDetailSheet(core: CoreClient, pluginId: String, onRemoved: () -> Unit,
             val refreshing = refreshAsked?.let { asked -> (p.lastRefreshMs ?: 0L) < asked && System.currentTimeMillis() - asked < 120_000 } == true
             SheetRow(
                 icon = LoungeIcons.Refresh,
-                title = "Refresh now",
+                title = "Actualizar ahora",
                 value = if (refreshing) "Refreshing…" else null,
                 accent = if (refreshing) colors.houselight else colors.dust,
                 onClick = { refreshAsked = System.currentTimeMillis(); core.refreshPlugin(p.id) },
@@ -283,7 +283,7 @@ fun PluginDetailSheet(core: CoreClient, pluginId: String, onRemoved: () -> Unit,
         }
         SheetRow(
             icon = LoungeIcons.Info,
-            title = "Log",
+            title = "Registro (Log)",
             value = if (showLog) "Hide" else "Show",
             onClick = {
                 showLog = !showLog
@@ -294,8 +294,8 @@ fun PluginDetailSheet(core: CoreClient, pluginId: String, onRemoved: () -> Unit,
             Column(Modifier.padding(start = 20.dp, top = 4.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
                 val lines = log
                 when {
-                    lines == null -> Text("Loading…", style = LoungeTheme.typography.caption, color = colors.dust)
-                    lines.isEmpty() -> Text("Nothing logged yet.", style = LoungeTheme.typography.caption, color = colors.dust)
+                    lines == null -> Text("Cargando…", style = LoungeTheme.typography.caption, color = colors.dust)
+                    lines.isEmpty() -> Text("Sin registros aún.", style = LoungeTheme.typography.caption, color = colors.dust)
                     else -> lines.takeLast(12).forEach { line ->
                         Text(line.substringAfter(' '), style = LoungeTheme.typography.caption, color = colors.dust, maxLines = 2, overflow = TextOverflow.Ellipsis)
                     }
@@ -311,7 +311,7 @@ fun PluginDetailSheet(core: CoreClient, pluginId: String, onRemoved: () -> Unit,
             var confirming by remember(p.id) { mutableStateOf(false) }
             SheetRow(
                 icon = LoungeIcons.Trash,
-                title = if (confirming) "Yes, remove it and its settings" else "Remove",
+                title = if (confirming) "Sí, eliminar complemento y ajustes" else "Eliminar",
                 titleColor = if (confirming) colors.ember else colors.limelight,
                 accent = colors.ember,
                 modifier = Modifier.onFocusChanged { if (!it.isFocused) confirming = false },

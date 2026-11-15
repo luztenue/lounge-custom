@@ -61,10 +61,10 @@ internal const val DEBUGGING_STAYS_ON = "USB debugging stays on afterwards. Othe
 internal fun DebuggingHowTo() {
     val colors = LoungeTheme.colors
     Column(verticalArrangement = androidx.compose.foundation.layout.Arrangement.spacedBy(4.dp)) {
-        Text("To turn on USB debugging:", style = LoungeTheme.typography.caption, color = colors.limelight)
-        Text("1. In the TV's settings, open System, then About, and press OK on Android TV OS build seven times.", style = LoungeTheme.typography.caption, color = colors.dust)
-        Text("2. Go back to System, open Developer options and turn on USB debugging.", style = LoungeTheme.typography.caption, color = colors.dust)
-        Text("3. Come back here and choose Connect.", style = LoungeTheme.typography.caption, color = colors.dust)
+        Text("Para activar la depuración ADB:", style = LoungeTheme.typography.caption, color = colors.limelight)
+        Text("1. En Ajustes del TV, entra en Sistema > Acerca de y pulsa OK 7 veces en Compilación.", style = LoungeTheme.typography.caption, color = colors.dust)
+        Text("2. Vuelve a Sistema, entra en Opciones de desarrollador y activa Depuración USB.", style = LoungeTheme.typography.caption, color = colors.dust)
+        Text("3. Regresa aquí y elige Conectar.", style = LoungeTheme.typography.caption, color = colors.dust)
     }
 }
 
@@ -179,7 +179,7 @@ fun PowerSetupSheet(power: PowerSetup, onHomeRoleChanged: () -> Unit, say: (Stri
             focusRequester = firstFocus,
         )
         if (!ready && power.shizukuInstalled) {
-            SheetRow(icon = LoungeIcons.Power, title = "Use Shizuku instead", value = "Ask", onClick = { power.requestShizuku(7001); scope.launch { delay(1500); power.refresh() } })
+            SheetRow(icon = LoungeIcons.Power, title = "Usar Shizuku en su lugar", value = "Solicitar", onClick = { power.requestShizuku(7001); scope.launch { delay(1500); power.refresh() } })
         }
         if (!ready) {
             Column(Modifier.padding(start = 20.dp, end = 4.dp, top = 4.dp), verticalArrangement = androidx.compose.foundation.layout.Arrangement.spacedBy(10.dp)) {
@@ -190,7 +190,7 @@ fun PowerSetupSheet(power: PowerSetup, onHomeRoleChanged: () -> Unit, say: (Stri
     }
 
     Spacer(Modifier.height(28.dp))
-    Text("What it can do", style = LoungeTheme.typography.meta, color = colors.dust)
+    Text("Qué puede hacer", style = LoungeTheme.typography.meta, color = colors.dust)
     Spacer(Modifier.height(8.dp))
     Column(verticalArrangement = androidx.compose.foundation.layout.Arrangement.spacedBy(12.dp)) {
         power.setupActions.flatMap {
@@ -207,9 +207,9 @@ fun PowerSetupSheet(power: PowerSetup, onHomeRoleChanged: () -> Unit, say: (Stri
         // Forgetting asks once more first, like removing a plugin; moving away takes the question back.
         SheetRow(
             icon = LoungeIcons.Trash,
-            title = if (forgetting) "Yes, forget this connection" else "Forget this connection",
+            title = if (forgetting) "Sí, olvidar esta conexión" else "Olvidar esta conexión",
             titleColor = if (forgetting) colors.ember else colors.limelight,
-            subtitle = "The TV asks you again the next time you connect",
+            subtitle = "El TV volverá a pedir permiso la próxima vez que conectes",
             modifier = Modifier.onFocusChanged { if (!it.isFocused) forgetting = false },
             onClick = {
                 if (!forgetting) {
@@ -333,13 +333,13 @@ fun TvControlsSheet(power: PowerSetup, deviceName: String, onKey: (String) -> Un
         null -> colors.dust
     }
 
-    SheetHeading("TV controls", if (ready) "Turn the TV on, switch its input and choose where the sound plays." else "Volume and playback work now. Power and input need Power Setup.")
+    SheetHeading("Controles de TV", if (ready) "Enciende el TV, cambia la entrada HDMI y elige la salida de audio." else "Volumen y reproducción funcionan ya. Encendido y entradas requieren Configuración Avanzada.")
 
     Column(verticalArrangement = androidx.compose.foundation.layout.Arrangement.spacedBy(8.dp)) {
         val tv = devices.firstOrNull { it.isTv }
         SheetRow(
             icon = if (ready) LoungeIcons.Tv else LoungeIcons.Power,
-            title = if (ready) "Wake the TV and switch to me" else "Set up TV power and input",
+            title = if (ready) "Encender TV y cambiar a esta entrada" else "Configurar encendido y entradas",
             subtitle = if (ready) reasonFor(power.oneTouchPlay) else null,
             subtitleLines = WHOLE,
             value = if (ready) valueFor(power.oneTouchPlay, tv?.let { if (it.isOn) "TV is on" else "TV is off" }) else if (status is PowerStatus.Unavailable) "Needs USB debugging" else "Power Setup",
@@ -348,28 +348,28 @@ fun TvControlsSheet(power: PowerSetup, deviceName: String, onKey: (String) -> Un
             focusRequester = firstFocus,
         )
         if (ready) {
-            SheetRow(icon = LoungeIcons.Power, title = "TV power", subtitle = reasonFor(power.tvPower), subtitleLines = WHOLE, value = valueFor(power.tvPower, "On or off"), accent = accentFor(power.tvPower), onClick = { run(power.tvPower) })
-            SheetRow(icon = LoungeIcons.Power, title = "Everything off", subtitle = reasonFor(power.everythingOff), subtitleLines = WHOLE, value = valueFor(power.everythingOff, "Sleep, TV follows"), accent = if (runs[power.everythingOff.id] == null) colors.ember else accentFor(power.everythingOff), onClick = { run(power.everythingOff) })
+            SheetRow(icon = LoungeIcons.Power, title = "Encendido de TV", subtitle = reasonFor(power.tvPower), subtitleLines = WHOLE, value = valueFor(power.tvPower, "Encender o apagar"), accent = accentFor(power.tvPower), onClick = { run(power.tvPower) })
+            SheetRow(icon = LoungeIcons.Power, title = "Apagar todo", subtitle = reasonFor(power.everythingOff), subtitleLines = WHOLE, value = valueFor(power.everythingOff, "Suspender todo"), accent = if (runs[power.everythingOff.id] == null) colors.ember else accentFor(power.everythingOff), onClick = { run(power.everythingOff) })
             if (power.isTelevision) {
-                SheetRow(icon = LoungeIcons.Soundbar, title = "Sound through the soundbar", subtitle = reasonFor(power.systemAudioOn), subtitleLines = WHOLE, value = valueFor(power.systemAudioOn), accent = accentFor(power.systemAudioOn), onClick = { run(power.systemAudioOn) })
-                SheetRow(icon = LoungeIcons.Soundbar, title = "Sound through the TV", subtitle = reasonFor(power.systemAudioOff), subtitleLines = WHOLE, value = valueFor(power.systemAudioOff), accent = accentFor(power.systemAudioOff), onClick = { run(power.systemAudioOff) })
+                SheetRow(icon = LoungeIcons.Soundbar, title = "Audio por barra de sonido", subtitle = reasonFor(power.systemAudioOn), subtitleLines = WHOLE, value = valueFor(power.systemAudioOn), accent = accentFor(power.systemAudioOn), onClick = { run(power.systemAudioOn) })
+                SheetRow(icon = LoungeIcons.Soundbar, title = "Audio por altavoces del TV", subtitle = reasonFor(power.systemAudioOff), subtitleLines = WHOLE, value = valueFor(power.systemAudioOff), accent = accentFor(power.systemAudioOff), onClick = { run(power.systemAudioOff) })
             }
             val others = devices.filter { !it.isTv && it.physicalAddress != 0 }
             if (others.size > 1) {
                 Spacer(Modifier.height(12.dp))
-                Text("Switch the TV to", style = LoungeTheme.typography.meta, color = colors.dust)
+                Text("Cambiar entrada del TV a", style = LoungeTheme.typography.meta, color = colors.dust)
                 others.forEach { d ->
                     val action = power.selectDevice(d)
-                    SheetRow(icon = LoungeIcons.Hdmi, title = d.name, subtitle = reasonFor(action), subtitleLines = WHOLE, value = valueFor(action, if (d.isOn) "On" else "Standby"), accent = accentFor(action), onClick = { run(action) })
+                    SheetRow(icon = LoungeIcons.Hdmi, title = d.name, subtitle = reasonFor(action), subtitleLines = WHOLE, value = valueFor(action, if (d.isOn) "Encendido" else "En espera"), accent = accentFor(action), onClick = { run(action) })
                 }
             }
         }
         Spacer(Modifier.height(12.dp))
-        Text("Sound and playback", style = LoungeTheme.typography.meta, color = colors.dust)
-        SheetRow(icon = LoungeIcons.Volume, title = "Volume up", onClick = { onKey("volume_up") })
-        SheetRow(icon = LoungeIcons.Volume, title = "Volume down", onClick = { onKey("volume_down") })
-        SheetRow(icon = LoungeIcons.Mute, title = "Mute", onClick = { onKey("mute") })
-        SheetRow(icon = LoungeIcons.Play, title = "Play or pause", onClick = { onKey("play_pause") })
+        Text("Sonido y reproducción", style = LoungeTheme.typography.meta, color = colors.dust)
+        SheetRow(icon = LoungeIcons.Volume, title = "Subir volumen", onClick = { onKey("volume_up") })
+        SheetRow(icon = LoungeIcons.Volume, title = "Bajar volumen", onClick = { onKey("volume_down") })
+        SheetRow(icon = LoungeIcons.Mute, title = "Silenciar", onClick = { onKey("mute") })
+        SheetRow(icon = LoungeIcons.Play, title = "Reproducir o pausar", onClick = { onKey("play_pause") })
     }
     SheetFootnote(if (ready) "Lounge asks the TV through its HDMI cable; the TV decides what it does." else "Volume reaches the TV or soundbar the way the remote's own buttons do.")
 }

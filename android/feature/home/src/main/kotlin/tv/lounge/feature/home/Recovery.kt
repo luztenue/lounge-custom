@@ -84,11 +84,11 @@ fun RecoveryScreen(
     ) {
         Column(Modifier.width(1100.dp), verticalArrangement = Arrangement.spacedBy(28.dp)) {
             // A heading and a live region: TalkBack says it as the screen comes up.
-            Text("Lounge couldn't start", style = type.displayL, color = colors.limelight, modifier = Modifier.semantics { heading(); liveRegion = LiveRegionMode.Polite })
+            Text("Lounge no pudo iniciar", style = type.displayL, color = colors.limelight, modifier = Modifier.semantics { heading(); liveRegion = LiveRegionMode.Polite })
             Text(
                 when (reason) {
                     RecoveryReason.StorageFull ->
-                        "The TV's storage is full, so Lounge can't open its saved layout and settings. Free some space in Settings, then try again."
+                        "El almacenamiento del TV está lleno. Libera espacio en Ajustes e intenta de nuevo."
                     RecoveryReason.Storage ->
                         "Its saved layout and settings could not be opened. Try again first. If it keeps happening, start fresh: they are set aside, Lounge begins again, and your apps, channels and inputs come back on their own."
                     RecoveryReason.Other ->
@@ -98,18 +98,18 @@ fun RecoveryScreen(
                 color = colors.limelight,
             )
             Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
-                LoungeButton(label = if (busy) "Opening…" else "Try again", onClick = { attempt(fresh = false) }, focusRequester = first)
+                LoungeButton(label = if (busy) "Abriendo…" else "Reintentar", onClick = { attempt(fresh = false) }, focusRequester = first)
                 if (reason != RecoveryReason.StorageFull) {
                     // One button that changes, rather than two, so the confirmation keeps focus.
                     LoungeButton(
-                        label = if (confirmFresh) "Yes, start fresh" else "Start fresh",
+                        label = if (confirmFresh) "Sí, iniciar desde cero" else "Iniciar desde cero",
                         onClick = { if (confirmFresh) attempt(fresh = true) else confirmFresh = true },
                         kind = if (confirmFresh) ButtonKind.Primary else ButtonKind.Secondary,
                         light = if (confirmFresh) colors.ember else colors.houselight,
                     )
                 }
                 LoungeButton(
-                    label = "Settings",
+                    label = "Ajustes",
                     onClick = { stuck = if (onOpenSettings()) null else "This TV's settings didn't open. Open them from the TV's own home screen instead." },
                     kind = ButtonKind.Secondary,
                 )
@@ -126,7 +126,7 @@ fun RecoveryScreen(
                 }
             }
             Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                if (failedAttempts > 0 && !busy) Text("It still won't open.", style = type.meta, color = colors.dust)
+                if (failedAttempts > 0 && !busy) Text("Sigue sin poder abrirse.", style = type.meta, color = colors.dust)
                 stuck?.let { Text(it, style = type.meta, color = colors.dust) }
             }
         }

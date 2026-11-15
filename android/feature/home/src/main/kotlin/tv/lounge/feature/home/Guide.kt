@@ -127,7 +127,7 @@ fun GuideSheet(loadGuide: (Long) -> Guide, visibleState: MutableTransitionState<
                     .fillMaxWidth()
                     .height(680.dp)
                     .background(colors.curtain)
-                    .semantics { paneTitle = "TV guide" }
+                    .semantics { paneTitle = "Guía de TV" }
                     .onPreviewKeyEvent { e -> if (e.isBack() && e.type == KeyEventType.KeyUp) { onDismiss(); true } else false }
                     .focusProperties { canFocus = !leaving }
                     .trapFocus(leaving)
@@ -168,12 +168,12 @@ private fun GuideHeader(g: Guide?, focus: FocusRequester, holdsFocus: Boolean) {
             .padding(start = Dimens.safeX, end = Dimens.safeX, top = 24.dp, bottom = 12.dp),
     ) {
         Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.Bottom, horizontalArrangement = Arrangement.SpaceBetween) {
-            Text("TV guide", style = LoungeTheme.typography.headline, color = colors.limelight, modifier = Modifier.semantics { heading() })
+            Text("Guía de TV", style = LoungeTheme.typography.headline, color = colors.limelight, modifier = Modifier.semantics { heading() })
             Text(status, style = LoungeTheme.typography.meta, color = colors.dust, modifier = Modifier.semantics { liveRegion = LiveRegionMode.Polite })
         }
         if (g != null && g.channels.isEmpty()) {
             Spacer(Modifier.height(16.dp))
-            Text("Channels show here once a TV app or a plugin lists what is on.", style = LoungeTheme.typography.body, color = colors.dust)
+            Text("Los canales aparecerán aquí cuando una app o complemento publique programación.", style = LoungeTheme.typography.body, color = colors.dust)
         }
     }
 }
@@ -244,7 +244,7 @@ private fun ChannelRow(ch: GuideChannel, g: Guide, gridWidth: Dp, rowHeight: Dp,
             val visible = ch.programmes.filter { it.endMs > g.fromMs && it.startMs < g.fromMs + WINDOW_MS }
             if (visible.isEmpty()) {
                 ProgrammeCell(
-                    GuideProgramme(id = "${ch.id}:none", title = "No programme information", subtitle = null, startMs = g.fromMs, endMs = g.fromMs + WINDOW_MS, isNow = false),
+                    GuideProgramme(id = "${ch.id}:none", title = "Sin información de programa", subtitle = null, startMs = g.fromMs, endMs = g.fromMs + WINDOW_MS, isNow = false),
                     ch, g, gridWidth, firstFocus,
                 ) { onTune(ch.action) }
             } else {
@@ -290,7 +290,7 @@ private fun ProgrammeCell(p: GuideProgramme, ch: GuideChannel, g: Guide, gridWid
             }
             .focusRim(colors, { rim.value }, 10.dp)
             .onFocusChanged { focused = it.isFocused }
-            .tilePress(onClick, onClick, clickLabel = "Watch")
+            .tilePress(onClick, onClick, clickLabel = "Ver")
             .focusable()
             .semantics { role = Role.Button; contentDescription = "${ch.name}, ${p.title}, $times" }
             .padding(horizontal = 14.dp, vertical = 6.dp),

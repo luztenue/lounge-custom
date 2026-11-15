@@ -60,7 +60,7 @@ const NOTICE_TV_LISTINGS: &str = "notice:tv_listings";
 /// The row of plugins suggested for the apps on the TV.
 const NOTICE_PLUGINS: &str = "notice:plugins";
 /// Beside the header of a plugin's row while its last refresh failed (DESIGN.md §8).
-const OFFLINE_NOTE: &str = "Offline, showing what we have";
+const OFFLINE_NOTE: &str = "Sin conexión, mostrando contenido guardado";
 
 /// The notice that suggests setting a plugin up.
 pub(crate) fn plugin_notice(plugin: &str) -> String {
@@ -70,11 +70,11 @@ pub(crate) fn plugin_notice(plugin: &str) -> String {
 /// The core rows and their titles, in default order. Every app is reachable from the All apps
 /// screen, which Your apps ends with, so there is no row of them all.
 pub(crate) const CORE_ROWS: [(&str, &str); 5] = [
-    ("continue", "Continue watching"),
-    ("apps", "Your apps"),
-    ("games", "Games"),
-    ("live", "Live now"),
-    ("tvcontrols", "TV controls"),
+    ("continue", "Continuar viendo"),
+    ("apps", "Tus aplicaciones"),
+    ("games", "Juegos"),
+    ("live", "En vivo ahora"),
+    ("tvcontrols", "Controles de TV"),
 ];
 
 /// The row order as it will be built: the user's order (or the default), with plugin and
@@ -153,16 +153,16 @@ pub(crate) fn row_infos(state: &State, config: &CoreConfig) -> Vec<RowInfo> {
                     .map(|r| r.title.clone())
                     .unwrap_or_else(|| rid.to_string());
                 let n = graph.plugin_row(pid, rid).len();
-                (title, n, format!("{name}, {}", counted(n, "title", "titles", "nothing yet")))
+                (title, n, format!("{name}, {}", counted(n, "título", "títulos", "nada aún")))
             } else if let Some(cid) = id.strip_prefix("channel:") {
                 let cid: i64 = cid.parse().unwrap_or(0);
                 let found = previews.iter().find(|(id, _, _)| *id == cid);
                 let (name, n) = found.map(|(_, name, items)| (name.clone(), items.len())).unwrap_or_default();
-                let title = if name.is_empty() { format!("Channel {cid}") } else { name };
-                (title, n, counted(n, "programme", "programmes", "Nothing yet"))
+                let title = if name.is_empty() { format!("Canal {cid}") } else { name };
+                (title, n, counted(n, "programa", "programas", "Nada aún"))
             } else {
                 let title = match id.as_str() {
-                    "tvcontrols" if !config.has_tv_controls => "Inputs".to_string(),
+                    "tvcontrols" if !config.has_tv_controls => "Entradas".to_string(),
                     other => CORE_ROWS.iter().find(|(i, _)| *i == other).map(|(_, t)| t.to_string()).unwrap_or_else(|| other.to_string()),
                 };
                 let (n, detail) = match id.as_str() {
@@ -172,34 +172,34 @@ pub(crate) fn row_infos(state: &State, config: &CoreConfig) -> Vec<RowInfo> {
                         let stage = graph.stage_candidates(STAGE_CAP);
                         let n = all.iter().filter(|it| !stage.iter().any(|s| s.id == it.id)).count();
                         let detail = if n == 0 && !all.is_empty() {
-                            format!("{}, all on the Stage", counted(all.len(), "title", "titles", ""))
+                            format!("{}, todo en la portada", counted(all.len(), "título", "títulos", ""))
                         } else {
-                            counted(n, "title", "titles", "Nothing to continue yet")
+                            counted(n, "título", "títulos", "Nada para continuar aún")
                         };
                         (n, detail)
                     }
                     "apps" => {
                         let (pinned, recent) = graph.your_apps_counts();
                         let detail = match (pinned, recent) {
-                            (0, 0) => "Only the way to All apps, until you pin one".to_string(),
-                            _ if !state.permissions.usage && recent > 0 => "Allow usage access in Settings to follow what you open".to_string(),
-                            (0, r) => format!("{} recent", counted(r, "app", "apps", "")),
-                            (p, 0) => format!("{}, pinned only", counted(p, "app", "apps", "")),
-                            (p, r) => format!("{p} pinned, {r} recent"),
+                            (0, 0) => "Solo acceso a Todas las apps, hasta que fijes una".to_string(),
+                            _ if !state.permissions.usage && recent > 0 => "Permite acceso de uso en Ajustes para seguir lo que abres".to_string(),
+                            (0, r) => format!("{} recientes", counted(r, "app", "apps", "")),
+                            (p, 0) => format!("{}, solo fijadas", counted(p, "app", "apps", "")),
+                            (p, r) => format!("{p} fijadas, {r} recientes"),
                         };
                         (pinned + recent, detail)
                     }
                     "games" => {
                         let n = graph.games().len();
-                        (n, counted(n, "game", "games", "No games installed"))
+                        (n, counted(n, "juego", "juegos", "No hay juegos instalados"))
                     }
                     "live" => {
                         let n = graph.live_now().len();
-                        (n, counted(n, "channel", "channels", "No channels yet"))
+                        (n, counted(n, "canal", "canales", "Sin canales aún"))
                     }
                     "tvcontrols" => {
                         let n = graph.devices().len();
-                        (n, counted(n, "input", "inputs", "No inputs found"))
+                        (n, counted(n, "entrada", "entradas", "No se encontraron entradas"))
                     }
                     _ => (0, String::new()),
                 };
@@ -358,9 +358,9 @@ fn build_row(state: &State, index: &BuildIndex, row_id: &str, now: i64, config: 
                 return if !state.permissions.tv_listings && !graph.layout.dismissed_notices.contains(NOTICE_TV_LISTINGS) {
                     Some(notice_row(
                         NOTICE_TV_LISTINGS,
-                        "Continue watching",
-                        "Turn on TV listings",
-                        "See what you were watching",
+                        "Continuar viendo",
+                        "Activar programación de TV",
+                        "Ver lo que estabas mirando",
                         "permission:tv_listings",
                     ))
                 } else {
@@ -369,7 +369,7 @@ fn build_row(state: &State, index: &BuildIndex, row_id: &str, now: i64, config: 
             }
             // The Stage strip already shows the first of them, so the row starts after it.
             let rest = items.into_iter().filter(|it| !index.on_stage(&it.id)).take(ROW_TILES).collect();
-            ("Continue watching", TileKind::Landscape, RowSize::M, None, rest)
+            ("Continuar viendo", TileKind::Landscape, RowSize::M, None, rest)
         }
         "apps" => {
             // The row ends with the way to every app, and stands even with no pins and no recent
@@ -380,9 +380,9 @@ fn build_row(state: &State, index: &BuildIndex, row_id: &str, now: i64, config: 
             }
             let mut tiles: Vec<Tile> = graph.your_apps().iter().map(|it| tile_for(graph, it, TileKind::AppBanner)).collect();
             tiles.push(all_apps_tile(total));
-            return Some(Row { id: row_id.to_string(), title: "Your apps".to_string(), kind: TileKind::AppBanner, size: RowSize::M, badge: None, tiles, note: None });
+            return Some(Row { id: row_id.to_string(), title: "Tus aplicaciones".to_string(), kind: TileKind::AppBanner, size: RowSize::M, badge: None, tiles, note: None });
         }
-        "games" => ("Games", TileKind::Landscape, RowSize::M, Some(Badge::Controller), graph.games()),
+        "games" => ("Juegos", TileKind::Landscape, RowSize::M, Some(Badge::Controller), graph.games()),
         "live" => {
             let channels = graph.live_now();
             if channels.is_empty() {
@@ -390,7 +390,7 @@ fn build_row(state: &State, index: &BuildIndex, row_id: &str, now: i64, config: 
             }
             return Some(Row {
                 id: row_id.to_string(),
-                title: "Live now".to_string(),
+                title: "En vivo ahora".to_string(),
                 kind: TileKind::Landscape,
                 size: RowSize::M,
                 badge: Some(Badge::Live),
@@ -411,7 +411,7 @@ fn build_row(state: &State, index: &BuildIndex, row_id: &str, now: i64, config: 
             }
             return Some(Row {
                 id: row_id.to_string(),
-                title: if config.has_tv_controls { "TV controls".to_string() } else { "Inputs".to_string() },
+                title: if config.has_tv_controls { "Controles de TV".to_string() } else { "Entradas".to_string() },
                 kind: TileKind::Compact,
                 size: RowSize::M,
                 badge: None,
@@ -629,8 +629,8 @@ fn all_apps_tile(count: usize) -> Tile {
     Tile {
         id: "control:allapps".to_string(),
         kind: TileKind::AppBanner,
-        title: "All apps".to_string(),
-        subtitle: Some(counted(count, "app", "apps", "Nothing yet")),
+        title: "Todas las apps".to_string(),
+        subtitle: Some(counted(count, "app", "apps", "Nada aún")),
         artwork_path: None,
         icon_path: None,
         light_argb: lounge_graph::color::HOUSELIGHT,
@@ -936,25 +936,25 @@ fn build_stage(state: &State, index: &BuildIndex, now: i64, hour_local: u32, con
 fn spotlight_for(graph: &Graph, index: &BuildIndex, it: &Item, now: i64, hour_local: u32) -> StageSpotlight {
     let airing = index.airing(it);
     let (category, primary_label) = match it.kind {
-        ItemKind::Resume | ItemKind::MediaSession => ("Continue watching", "Continue"),
-        ItemKind::Channel => ("Live now", "Watch"),
-        ItemKind::Game => ("Games", "Play"),
-        ItemKind::Wallpaper => ("Pictures", "Open"),
-        ItemKind::Input | ItemKind::Device => ("Inputs", "Switch"),
+        ItemKind::Resume | ItemKind::MediaSession => ("Continuar viendo", "Continuar"),
+        ItemKind::Channel => ("En vivo ahora", "Ver"),
+        ItemKind::Game => ("Juegos", "Jugar"),
+        ItemKind::Wallpaper => ("Imágenes", "Abrir"),
+        ItemKind::Input | ItemKind::Device => ("Entradas", "Cambiar"),
         ItemKind::Program => {
             if it.flags.watch_next {
-                if it.flags.is_new { ("New for you", "Watch") } else { ("Up next", "Watch") }
+                if it.flags.is_new { ("Nuevo para ti", "Ver") } else { ("A continuación", "Ver") }
             } else {
-                ("Tonight", "Watch")
+                ("Esta noche", "Ver")
             }
         }
         ItemKind::App => {
             if it.flags.is_game {
-                ("Games", "Play")
+                ("Juegos", "Jugar")
             } else if it.last_used_ms.is_some() {
-                ("Jump back in", "Open")
+                ("Retomar", "Abrir")
             } else {
-                ("Your apps", "Open")
+                ("Tus aplicaciones", "Abrir")
             }
         }
     };
@@ -1101,27 +1101,27 @@ fn remaining_text(it: &Item, progress: f32) -> Option<String> {
 fn left_text(left_ms: i64) -> String {
     let minutes = (left_ms as f64 / 60_000.0).round() as i64;
     if minutes <= 0 {
-        return "Almost finished".to_string();
+        return "Casi terminado".to_string();
     }
     let (h, m) = (minutes / 60, minutes % 60);
-    let hours = counted(h as usize, "hour", "hours", "");
-    let mins = counted(m as usize, "minute", "minutes", "");
+    let hours = counted(h as usize, "hora", "horas", "");
+    let mins = counted(m as usize, "minuto", "minutos", "");
     match (h, m) {
-        (0, _) => format!("{mins} left"),
-        (_, 0) => format!("{hours} left"),
-        _ => format!("{hours} {mins} left"),
+        (0, _) => format!("Quedan {mins}"),
+        (_, 0) => format!("Quedan {hours}"),
+        _ => format!("Quedan {hours} y {mins}"),
     }
 }
 
 fn ago_text(ms: i64) -> String {
     let minutes = (ms / 60_000).max(0);
     match minutes {
-        m if m < 2 => "Opened just now".to_string(),
-        m if m < 60 => format!("Opened {m} minutes ago"),
-        m if m < 120 => "Opened an hour ago".to_string(),
-        m if m < 1440 => format!("Opened {} hours ago", m / 60),
-        m if m < 2880 => "Opened yesterday".to_string(),
-        m => format!("Opened {} days ago", m / 1440),
+        m if m < 2 => "Abierta hace un momento".to_string(),
+        m if m < 60 => format!("Abierta hace {m} minutos"),
+        m if m < 120 => "Abierta hace una hora".to_string(),
+        m if m < 1440 => format!("Abierta hace {} horas", m / 60),
+        m if m < 2880 => "Abierta ayer".to_string(),
+        m => format!("Abierta hace {} días", m / 1440),
     }
 }
 

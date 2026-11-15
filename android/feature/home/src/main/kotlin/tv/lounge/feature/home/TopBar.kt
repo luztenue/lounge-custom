@@ -121,9 +121,9 @@ fun TopBar(
     ) {
         Mark()
         Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(28.dp)) {
-            TopBarButton(LoungeIcons.Search, "Search", onSearch, focus, focus.search)
-            if (showGuide) TopBarButton(LoungeIcons.Guide, "TV guide", onGuide, focus, focus.guide)
-            if (showTvControls) TopBarButton(LoungeIcons.Tv, "TV controls", onTvControls, focus, focus.tvControls)
+            TopBarButton(LoungeIcons.Search, "Buscar", onSearch, focus, focus.search)
+            if (showGuide) TopBarButton(LoungeIcons.Guide, "Guía de TV", onGuide, focus, focus.guide)
+            if (showTvControls) TopBarButton(LoungeIcons.Tv, "Controles de TV", onTvControls, focus, focus.tvControls)
             if (nowPlaying != null) NowPlayingChip(nowPlaying, onNowPlaying, focus)
             TopBarButton(LoungeIcons.Settings, "Ajustes", onSettings, focus, focus.settings)
             Spacer(Modifier.width(12.dp))
@@ -249,7 +249,7 @@ private fun NowPlayingChip(np: NowPlaying, onClick: () -> Unit, focus: TopBarFoc
             }
             .tilePress(onClick, onClick)
             .focusable()
-            .semantics { role = Role.Button; contentDescription = "Now playing, ${np.title}" }
+            .semantics { role = Role.Button; contentDescription = "Reproduciendo ahora, ${np.title}" }
             .height(48.dp)
             .padding(horizontal = 16.dp),
         verticalAlignment = Alignment.CenterVertically,

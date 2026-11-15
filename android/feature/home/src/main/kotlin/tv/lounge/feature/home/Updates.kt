@@ -33,8 +33,8 @@ fun updateStatusWord(state: UpdateState, auto: Boolean): String = when (state) {
     is UpdateState.Downloading -> "Downloading…"
     is UpdateState.Ready, is UpdateState.NeedsConfirmation -> "${state.release?.version} ready"
     is UpdateState.Installing -> "Installing…"
-    is UpdateState.Failed -> "Problem"
-    is UpdateState.UpToDate -> "Up to date"
+    is UpdateState.Failed -> "Error"
+    is UpdateState.UpToDate -> "Al día"
     is UpdateState.Idle -> if (auto) "On" else "Manual"
 }
 
@@ -54,7 +54,7 @@ fun UpdatesSheet(updates: UpdateManager, firstFocus: FocusRequester) {
     val activity = context as? Activity
     fun act() { activity?.let { updates.interact(it, scope) } }
 
-    SheetHeading("Updates")
+    SheetHeading("Actualizaciones")
     Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
         SheetRow(
             icon = LoungeIcons.Info,
@@ -77,17 +77,17 @@ fun UpdatesSheet(updates: UpdateManager, firstFocus: FocusRequester) {
         )
         SheetRow(
             icon = SettingsGlyphs.Clock,
-            title = "Check twice a day",
+            title = "Buscar dos veces al día",
             value = if (auto) "On" else "Off",
             accent = if (auto) colors.signal else colors.dust,
             onClick = { updates.setAutoCheck(!auto) },
         )
         when (val s = state) {
-            is UpdateState.Available -> SheetRow(icon = SettingsGlyphs.Download, title = "Get Lounge ${s.release.version}", value = "Download", accent = colors.houselight, onClick = ::act)
-            is UpdateState.Downloading -> SheetRow(icon = SettingsGlyphs.Download, title = "Downloading Lounge ${s.release.version}", value = "${(s.progress * 100).roundToInt()} %", onClick = {})
+            is UpdateState.Available -> SheetRow(icon = SettingsGlyphs.Download, title = "Descargar Lounge ${s.release.version}", value = "Descargar", accent = colors.houselight, onClick = ::act)
+            is UpdateState.Downloading -> SheetRow(icon = SettingsGlyphs.Download, title = "Descargando Lounge ${s.release.version}", value = "${(s.progress * 100).roundToInt()} %", onClick = {})
             is UpdateState.Ready -> SheetRow(
                 icon = if (s.path == InstallPath.NeedsPermission) LoungeIcons.Settings else SettingsGlyphs.Download,
-                title = if (s.path == InstallPath.NeedsPermission) "Allow Lounge to install updates" else "Install Lounge ${s.release.version}",
+                title = if (s.path == InstallPath.NeedsPermission) "Permitir a Lounge instalar actualizaciones" else "Instalar Lounge ${s.release.version}",
                 subtitle = if (s.path == InstallPath.NeedsPermission) INSTALL_HINT else null,
                 accent = colors.houselight,
                 value = when (s.path) {
@@ -97,16 +97,16 @@ fun UpdatesSheet(updates: UpdateManager, firstFocus: FocusRequester) {
                 },
                 onClick = ::act,
             )
-            is UpdateState.NeedsConfirmation -> SheetRow(icon = SettingsGlyphs.Download, title = "Install Lounge ${s.release.version}", value = "Confirm", accent = colors.houselight, onClick = ::act)
-            is UpdateState.Installing -> SheetRow(icon = SettingsGlyphs.Download, title = "Installing Lounge ${s.release.version}…", onClick = {})
-            is UpdateState.Failed -> SheetRow(icon = LoungeIcons.Refresh, title = "Try again", value = s.release?.let { "Lounge ${it.version}" }, onClick = ::act)
+            is UpdateState.NeedsConfirmation -> SheetRow(icon = SettingsGlyphs.Download, title = "Instalar Lounge ${s.release.version}", value = "Confirmar", accent = colors.houselight, onClick = ::act)
+            is UpdateState.Installing -> SheetRow(icon = SettingsGlyphs.Download, title = "Instalando Lounge ${s.release.version}…", onClick = {})
+            is UpdateState.Failed -> SheetRow(icon = LoungeIcons.Refresh, title = "Reintentar", value = s.release?.let { "Lounge ${it.version}" }, onClick = ::act)
             else -> Unit
         }
         state.release?.let { r ->
             val summary = r.summary()
             if (summary.isNotEmpty()) {
                 Spacer(Modifier.height(8.dp))
-                Text("What's new in ${r.version}", style = LoungeTheme.typography.meta, color = colors.limelight, modifier = Modifier.padding(horizontal = 16.dp))
+                Text("Novedades en ${r.version}", style = LoungeTheme.typography.meta, color = colors.limelight, modifier = Modifier.padding(horizontal = 16.dp))
                 Text(summary, style = LoungeTheme.typography.caption, color = colors.dust, modifier = Modifier.padding(horizontal = 16.dp))
             }
         }
@@ -123,7 +123,7 @@ fun UpdatesSheet(updates: UpdateManager, firstFocus: FocusRequester) {
         Text("Lounge looks at its releases on GitHub twice a day. $how", style = LoungeTheme.typography.caption, color = colors.dust, modifier = Modifier.padding(horizontal = 16.dp))
         if (path == InstallPath.NeedsPermission) {
             Spacer(Modifier.height(8.dp))
-            SheetRow(icon = LoungeIcons.Settings, title = "Allow Lounge to install updates", subtitle = INSTALL_HINT, onClick = { activity?.let { updates.askForInstallPermission(it, scope) } })
+            SheetRow(icon = LoungeIcons.Settings, title = "Permitir a Lounge instalar actualizaciones", subtitle = INSTALL_HINT, onClick = { activity?.let { updates.askForInstallPermission(it, scope) } })
         }
     }
 }

@@ -27,10 +27,10 @@ object Words {
     fun ago(ms: Long): String {
         val minutes = (ms / 60_000).coerceAtLeast(0)
         return when {
-            minutes < 1 -> "just now"
-            minutes < 60 -> "${counted(minutes, "minute", "minutes")} ago"
-            minutes < 24 * 60 -> "${counted(minutes / 60, "hour", "hours")} ago"
-            else -> "${counted(minutes / (24 * 60), "day", "days")} ago"
+            minutes < 1 -> "hace un momento"
+            minutes < 60 -> "hace ${counted(minutes, "minuto", "minutos")}"
+            minutes < 24 * 60 -> "hace ${counted(minutes / 60, "hora", "horas")}"
+            else -> "hace ${counted(minutes / (24 * 60), "día", "días")}"
         }
     }
 

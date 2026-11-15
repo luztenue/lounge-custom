@@ -36,9 +36,9 @@ const MOST_ITEMS: usize = 200;
 /// The key-value store takes 256 KB a key; the cache stays well under it.
 const CACHE_BYTES: usize = 200 * 1024;
 const MINUTE_MS: i64 = 60_000;
-const SIGNED_OUT: &str = "Google no longer accepts this sign-in. Press Refresh now to sign in again.";
-const QUOTA: &str = "YouTube's daily allowance for this app is used up. It comes back at midnight, Pacific time.";
-const API_OFF: &str = "The YouTube Data API v3 is not enabled for this Google Cloud project. Enable it, then try again.";
+const SIGNED_OUT: &str = "Google ya no acepta esta sesión. Pulsa Actualizar ahora para iniciar sesión de nuevo.";
+const QUOTA: &str = "Se agotó el límite diario de YouTube para esta app. Se restablece a medianoche (hora del Pacífico).";
+const API_OFF: &str = "YouTube Data API v3 no está activada en este proyecto de Google Cloud. Actívala e intenta de nuevo.";
 
 impl sdk::Plugin for YouTube {
     fn manifest() -> Manifest {
@@ -46,23 +46,23 @@ impl sdk::Plugin for YouTube {
             id: "tv.lounge.youtube".into(),
             name: "YouTube".into(),
             version: env!("CARGO_PKG_VERSION").into(),
-            description: "New videos from the channels you follow, and with a Google sign-in your subscriptions, playlists and liked videos.".into(),
+            description: "Videos nuevos de los canales que sigues, y al iniciar sesión con Google, tus suscripciones, playlists y videos con Me gusta.".into(),
             publisher_name: "Lounge".into(),
             kinds: vec![Kind::Content],
             fetch_hosts: vec!["www.youtube.com".into(), "m.youtube.com".into(), "*.ytimg.com".into(), "oauth2.googleapis.com".into(), "www.googleapis.com".into()],
             refresh_minutes: 30,
             rows: vec![
-                RowSpec { id: "new".into(), title: "New on YouTube".into(), style: RowStyle::Landscape },
-                RowSpec { id: "playlists".into(), title: "Your playlists on YouTube".into(), style: RowStyle::Landscape },
-                RowSpec { id: "liked".into(), title: "Liked on YouTube".into(), style: RowStyle::Landscape },
+                RowSpec { id: "new".into(), title: "Nuevo en YouTube".into(), style: RowStyle::Landscape },
+                RowSpec { id: "playlists".into(), title: "Tus playlists en YouTube".into(), style: RowStyle::Landscape },
+                RowSpec { id: "liked".into(), title: "Me gusta en YouTube".into(), style: RowStyle::Landscape },
             ],
             settings: vec![
                 SettingSpec {
                     key: "channels".into(),
-                    label: "Channels".into(),
+                    label: "Canales".into(),
                     kind: SettingKind::List,
                     required: false,
-                    help: Some("The channels and playlists to follow, as links, @handles or ids, one per line or separated by commas. A channel's id starts with UC and a playlist's with PL. A Google Takeout export of your subscriptions, the CSV file, can be pasted in whole. Not needed with a sign-in below.".into()),
+                    help: Some("Canales y playlists a seguir, como enlaces, @handles o IDs, uno por línea o separados por comas. Un ID de canal empieza por UC y una playlist por PL. También puedes pegar el CSV de suscripciones de Google Takeout. No es necesario si inicias sesión abajo.".into()),
                     default: None,
                 },
                 SettingSpec {
@@ -70,16 +70,16 @@ impl sdk::Plugin for YouTube {
                     label: "Google Client ID".into(),
                     kind: SettingKind::Text,
                     required: false,
-                    help: Some("To show your subscriptions, playlists and liked videos, make a Google Cloud project of your own and paste its Client ID and Client secret here. At console.cloud.google.com make a project, enable the YouTube Data API v3, set the OAuth consent screen to External and publish it, then make an OAuth client of the type TVs and Limited Input devices. This page then shows a code to enter on your phone.".into()),
+                    help: Some("Para ver tus suscripciones, playlists y Me gusta, crea un proyecto en console.cloud.google.com, activa YouTube Data API v3, publica la pantalla de consentimiento como Externa y crea un cliente OAuth de tipo TV y dispositivos de entrada limitada. Luego pega aquí el Client ID y Client secret.".into()),
                     default: None,
                 },
                 SettingSpec { key: "client_secret".into(), label: "Google Client secret".into(), kind: SettingKind::Password, required: false, help: None, default: None },
-                SettingSpec { key: "subscriptions".into(), label: "Subscriptions".into(), kind: SettingKind::Toggle, required: false, help: Some("New videos from the channels you subscribe to, in New on YouTube.".into()), default: Some("true".into()) },
-                SettingSpec { key: "playlists".into(), label: "Playlists row".into(), kind: SettingKind::Toggle, required: false, help: Some("Your own playlists. Watch later is not one YouTube hands out.".into()), default: Some("true".into()) },
-                SettingSpec { key: "liked".into(), label: "Liked videos row".into(), kind: SettingKind::Toggle, required: false, help: None, default: Some("false".into()) },
-                SettingSpec { key: "per_source".into(), label: "Videos per channel".into(), kind: SettingKind::Number, required: false, help: None, default: Some("4".into()) },
-                SettingSpec { key: "days".into(), label: "Only the last … days".into(), kind: SettingKind::Number, required: false, help: Some("0 shows the feed's newest videos whatever their age.".into()), default: Some("30".into()) },
-                SettingSpec { key: "shorts".into(), label: "Include Shorts".into(), kind: SettingKind::Toggle, required: false, help: None, default: Some("false".into()) },
+                SettingSpec { key: "subscriptions".into(), label: "Suscripciones".into(), kind: SettingKind::Toggle, required: false, help: Some("Videos nuevos de los canales a los que estás suscrito, en Nuevo en YouTube.".into()), default: Some("true".into()) },
+                SettingSpec { key: "playlists".into(), label: "Fila de playlists".into(), kind: SettingKind::Toggle, required: false, help: Some("Tus propias playlists. Ver más tarde no es expuesta por YouTube.".into()), default: Some("true".into()) },
+                SettingSpec { key: "liked".into(), label: "Fila de Me gusta".into(), kind: SettingKind::Toggle, required: false, help: None, default: Some("false".into()) },
+                SettingSpec { key: "per_source".into(), label: "Videos por canal".into(), kind: SettingKind::Number, required: false, help: None, default: Some("4".into()) },
+                SettingSpec { key: "days".into(), label: "Solo los últimos … días".into(), kind: SettingKind::Number, required: false, help: Some("0 muestra los videos más recientes sin importar su antigüedad.".into()), default: Some("30".into()) },
+                SettingSpec { key: "shorts".into(), label: "Incluir Shorts".into(), kind: SettingKind::Toggle, required: false, help: None, default: Some("false".into()) },
             ],
             homepage: None,
             self_signed_servers: false,
@@ -96,7 +96,7 @@ impl sdk::Plugin for YouTube {
         };
         let account = Account::connect(ctx.now_ms, &mut budget)?;
         if sources.is_empty() && account.is_none() {
-            return Err("Nothing to show yet. Add a channel link or id, or a Google Client ID, in the plugin's settings.".into());
+            return Err("Nada que mostrar aún. Agrega un enlace o ID de canal, o un Google Client ID en los ajustes del plugin.".into());
         }
         let per_source = number_setting("per_source", 4).clamp(1, 15) as usize;
         let days = number_setting("days", 30).clamp(0, 3_650);

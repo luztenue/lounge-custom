@@ -93,7 +93,7 @@ fun TileMenuPopover(
                             .width(MenuWidth)
                             .clip(RoundedCornerShape(16.dp))
                             .background(colors.curtain)
-                            .semantics { paneTitle = "Options for ${tile.title}" }
+                            .semantics { paneTitle = "Opciones para ${tile.title}" }
                             .onPreviewKeyEvent { e -> if (e.isBack() && e.type == KeyEventType.KeyUp) { onDismiss(); true } else false }
                             .focusProperties { canFocus = !leaving }
                             .trapFocus(leaving)
@@ -160,20 +160,20 @@ fun hasMenu(tile: Tile): Boolean = !tile.id.startsWith("control:") && !tile.id.s
 
 /** What each pin does, in the menu and on the phone, so the word "pin" never stands alone. */
 object PinWords {
-    const val PIN_APP = "Pin to the front of Your apps"
-    const val PIN_APP_DETAIL = "Stays put ahead of recent apps"
-    const val UNPIN_APP = "Unpin from Your apps"
-    const val UNPIN_APP_DETAIL = "Follows what you open again"
-    const val PIN_STAGE = "Pin to the Stage"
-    const val PIN_STAGE_DETAIL = "Stays in the big pictures up top"
-    const val UNPIN_STAGE = "Unpin from the Stage"
-    const val UNPIN_STAGE_DETAIL = "What you watch takes its place"
-    const val HIDE_DETAIL = "Off every row until you show it"
-    const val SHOW = "Show"
-    const val SHOW_DETAIL = "Back on every row it belongs in"
-    const val HIDE_ALL_FROM_DETAIL = "Off Continue watching until you show it"
-    const val HIDE_ROW = "Hide this row"
-    const val HIDE_ROW_DETAIL = "Settings, Rows brings it back"
+    const val PIN_APP = "Fijar al inicio de Tus apps"
+    const val PIN_APP_DETAIL = "Se mantiene fija antes de las apps recientes"
+    const val UNPIN_APP = "Desfijar de Tus apps"
+    const val UNPIN_APP_DETAIL = "Vuelve a ordenarse por uso reciente"
+    const val PIN_STAGE = "Fijar en portada"
+    const val PIN_STAGE_DETAIL = "Se mantiene en la vista previa superior"
+    const val UNPIN_STAGE = "Desfijar de portada"
+    const val UNPIN_STAGE_DETAIL = "Lo que estás viendo ocupa su lugar"
+    const val HIDE_DETAIL = "Se oculta de todas las filas hasta que la muestres"
+    const val SHOW = "Mostrar"
+    const val SHOW_DETAIL = "Vuelve a aparecer en sus filas"
+    const val HIDE_ALL_FROM_DETAIL = "Se oculta de Continuar viendo hasta que lo muestres"
+    const val HIDE_ROW = "Ocultar esta fila"
+    const val HIDE_ROW_DETAIL = "Puedes recuperarla en Ajustes > Filas"
 }
 
 /**
@@ -208,22 +208,22 @@ fun menuItemsFor(
     val isApp = tile.id.startsWith("app:")
     val items = mutableListOf<MenuItem>()
     if (tile.id.startsWith("notice:")) {
-        items += MenuItem("Don't show this again", LoungeIcons.Hide, onSelect = onDismissNotice)
+        items += MenuItem("No volver a mostrar", LoungeIcons.Hide, onSelect = onDismissNotice)
         return items
     }
     if (tile.hidden) {
         items += MenuItem(PinWords.SHOW, LoungeIcons.Show, detail = PinWords.SHOW_DETAIL, onSelect = onShow)
         if (isApp) {
-            items += MenuItem("App info", LoungeIcons.Info, onSelect = onAppInfo)
-            items += MenuItem("Open in Play Store", LoungeIcons.Play, onSelect = onPlay)
-            items += MenuItem("Uninstall", LoungeIcons.Trash, destructive = true, onSelect = onUninstall)
+            items += MenuItem("Info de la app", LoungeIcons.Info, onSelect = onAppInfo)
+            items += MenuItem("Abrir en Play Store", LoungeIcons.Play, onSelect = onPlay)
+            items += MenuItem("Desinstalar", LoungeIcons.Trash, destructive = true, onSelect = onUninstall)
         }
         return items
     }
     if (isApp && rowId == "apps") {
         if (isPinned) {
-            if (canMoveLeft) items += MenuItem("Move left", LoungeIcons.Move, onSelect = onMoveLeft)
-            if (canMoveRight) items += MenuItem("Move right", LoungeIcons.Move, onSelect = onMoveRight)
+            if (canMoveLeft) items += MenuItem("Mover a la izquierda", LoungeIcons.Move, onSelect = onMoveLeft)
+            if (canMoveRight) items += MenuItem("Mover a la derecha", LoungeIcons.Move, onSelect = onMoveRight)
             items += MenuItem(PinWords.UNPIN_APP, LoungeIcons.Pin, detail = PinWords.UNPIN_APP_DETAIL, onSelect = onUnpin)
         } else {
             items += MenuItem(PinWords.PIN_APP, LoungeIcons.Pin, detail = PinWords.PIN_APP_DETAIL, onSelect = onPin)
@@ -235,23 +235,23 @@ fun menuItemsFor(
             MenuItem(PinWords.PIN_APP, LoungeIcons.Pin, detail = PinWords.PIN_APP_DETAIL, onSelect = onPin)
         }
     }
-    if (tile.id.startsWith("chan:")) items += MenuItem("TV guide", LoungeIcons.Guide, onSelect = onGuide)
+    if (tile.id.startsWith("chan:")) items += MenuItem("Guía de TV", LoungeIcons.Guide, onSelect = onGuide)
     if (isStagePinned) {
         items += MenuItem(PinWords.UNPIN_STAGE, LoungeIcons.Pin, detail = PinWords.UNPIN_STAGE_DETAIL, onSelect = onUnpinStage)
     } else if (tile.action.isNotEmpty()) {
         // The Stage is for what can be opened, which a tile to read cannot.
         items += MenuItem(PinWords.PIN_STAGE, LoungeIcons.Pin, detail = PinWords.PIN_STAGE_DETAIL, onSelect = onPinStage)
     }
-    items += MenuItem("Hide", LoungeIcons.Hide, detail = PinWords.HIDE_DETAIL, onSelect = onHide)
+    items += MenuItem("Ocultar", LoungeIcons.Hide, detail = PinWords.HIDE_DETAIL, onSelect = onHide)
     // Only something to continue says where it comes from.
     tile.providerName?.let { name ->
-        items += MenuItem("Hide everything from $name", LoungeIcons.Hide, detail = PinWords.HIDE_ALL_FROM_DETAIL, onSelect = onHideAllFrom)
+        items += MenuItem("Ocultar todo de $name", LoungeIcons.Hide, detail = PinWords.HIDE_ALL_FROM_DETAIL, onSelect = onHideAllFrom)
     }
     if (rowTitle != null) items += MenuItem(PinWords.HIDE_ROW, LoungeIcons.Rows, detail = PinWords.HIDE_ROW_DETAIL, onSelect = onHideRow)
     if (isApp) {
-        items += MenuItem("App info", LoungeIcons.Info, onSelect = onAppInfo)
-        items += MenuItem("Open in Play Store", LoungeIcons.Play, onSelect = onPlay)
-        items += MenuItem("Uninstall", LoungeIcons.Trash, destructive = true, onSelect = onUninstall)
+        items += MenuItem("Info de la app", LoungeIcons.Info, onSelect = onAppInfo)
+        items += MenuItem("Abrir en Play Store", LoungeIcons.Play, onSelect = onPlay)
+        items += MenuItem("Desinstalar", LoungeIcons.Trash, destructive = true, onSelect = onUninstall)
     }
     return items
 }

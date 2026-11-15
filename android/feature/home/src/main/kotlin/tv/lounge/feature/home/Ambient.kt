@@ -468,7 +468,7 @@ fun AmbientSheet(power: PowerSetup, prefs: Prefs, core: CoreClient, onPowerSetup
     Column(verticalArrangement = androidx.compose.foundation.layout.Arrangement.spacedBy(8.dp)) {
         SheetRow(
             icon = LoungeIcons.Frame,
-            title = "Screensaver",
+            title = "Salvapantallas",
             subtitle = when {
                 busy -> "Switching…"
                 ours && ready -> "OK puts back the one before"
@@ -485,13 +485,13 @@ fun AmbientSheet(power: PowerSetup, prefs: Prefs, core: CoreClient, onPowerSetup
         )
         SheetRow(
             icon = SettingsGlyphs.Scene,
-            title = "Style",
+            title = "Estilo",
             value = choices[at].second,
             subtitle = choices[at].third,
             onClick = { step(1) },
             onCycle = { step(it) },
         )
-        SheetRow(icon = LoungeIcons.Play, title = "Preview it now", subtitle = "Any key brings you back", onClick = onPreview)
+        SheetRow(icon = LoungeIcons.Play, title = "Vista previa ahora", subtitle = "Pulsa cualquier tecla para volver", onClick = onPreview)
         if (error != null) Text(error!!, style = LoungeTheme.typography.caption, color = colors.ember)
     }
     SheetFootnote(

@@ -76,9 +76,9 @@ fun RowsSheet(
         onDispose { sheetBack.handler = null }
     }
 
-    SheetHeading("Home screen rows", "OK shows or hides a row. Hold OK to pick one up, Up and Down move it, and OK or Back sets it down.")
+    SheetHeading("Filas de inicio", "OK muestra u oculta una fila. Mantén OK para moverla con Arriba/Abajo y pulsa OK o Atrás para soltarla.")
     when {
-        rows == null -> Text("Loading…", style = LoungeTheme.typography.meta, color = colors.dust)
+        rows == null -> Text("Cargando…", style = LoungeTheme.typography.meta, color = colors.dust)
         else -> Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
             rows.forEachIndexed { i, row ->
                 key(row.id) {
@@ -90,10 +90,10 @@ fun RowsSheet(
                         title = row.title,
                         subtitle = row.detail,
                         value = when {
-                            isMoving -> "Moving"
-                            !row.shown -> "Hidden"
-                            row.count == 0u -> "Empty"
-                            else -> "Shown"
+                            isMoving -> "Moviendo"
+                            !row.shown -> "Oculta"
+                            row.count == 0u -> "Vacía"
+                            else -> "Visible"
                         },
                         accent = when {
                             isMoving -> colors.houselight
@@ -154,9 +154,9 @@ fun RowsSheet(
             // The order cannot be had back, so it asks once more first; moving away takes the question back.
             SheetRow(
                 icon = LoungeIcons.Refresh,
-                title = if (confirmReset) "Yes, put them back" else "Put the rows back in their usual order",
+                title = if (confirmReset) "Sí, restaurar orden" else "Restaurar orden predeterminado de filas",
                 titleColor = if (confirmReset) colors.ember else colors.limelight,
-                subtitle = if (resetDone) "Done. What you hid stays hidden." else "Keeps what you have hidden",
+                subtitle = if (resetDone) "Listo. Lo que ocultaste sigue oculto." else "Mantiene oculto lo que ya ocultaste",
                 modifier = Modifier.onFocusChanged { if (!it.isFocused) confirmReset = false },
                 onClick = {
                     if (!confirmReset) {
@@ -176,10 +176,10 @@ fun RowsSheet(
 
     Spacer(Modifier.height(24.dp))
     Hairline(Modifier.fillMaxWidth())
-    SheetGroup("Hidden from every row")
+    SheetGroup("Elementos ocultos")
     when {
         hidden == null -> Unit
-        hidden.isEmpty() -> Text("Nothing is hidden. Hold OK on any tile and choose Hide.", style = LoungeTheme.typography.meta, color = colors.dust)
+        hidden.isEmpty() -> Text("No hay nada oculto. Mantén OK en cualquier tarjeta y elige Ocultar.", style = LoungeTheme.typography.meta, color = colors.dust)
         else -> Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
             hidden.forEachIndexed { i, item ->
                 key(item.id) {
@@ -189,7 +189,7 @@ fun RowsSheet(
                             { AsyncImage(model = path, contentDescription = null, contentScale = ContentScale.Fit, modifier = Modifier.size(28.dp).clip(RoundedCornerShape(7.dp))) }
                         },
                         title = item.title,
-                        value = "Show",
+                        value = "Mostrar",
                         onClick = {
                             sounds?.tick()
                             // The row goes at once, so focus moves to its neighbour, or back up to the reset row.
@@ -207,10 +207,10 @@ fun RowsSheet(
         }
     }
     Spacer(Modifier.height(24.dp))
-    SheetGroup("Continue watching comes from")
+    SheetGroup("Fuentes de Continuar viendo")
     when {
         sources == null -> Unit
-        sources.isEmpty() -> Text("Nothing to continue yet. Apps and plugins are listed here once they bring something.", style = LoungeTheme.typography.meta, color = colors.dust)
+        sources.isEmpty() -> Text("Nada para continuar aún. Las apps y plugins aparecerán aquí cuando tengan contenido.", style = LoungeTheme.typography.meta, color = colors.dust)
         else -> Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
             sources.forEachIndexed { i, source ->
                 key(source.id) {
@@ -221,11 +221,11 @@ fun RowsSheet(
                         },
                         title = source.title,
                         subtitle = when (source.count) {
-                            0u -> "Nothing to continue now"
+                            0u -> "Nada para continuar ahora"
                             1u -> "1 title"
                             else -> "${source.count} titles"
                         },
-                        value = if (source.shown) "Shown" else "Hidden",
+                        value = if (source.shown) "Visible" else "Oculta",
                         accent = if (source.shown && source.count > 0u) colors.signal else colors.dust,
                         onClick = {
                             sounds?.tick()
@@ -248,7 +248,7 @@ fun RowsSheet(
             }
         }
     }
-    SheetFootnote("A row with nothing in it stays off the screen until it has something to show.")
+    SheetFootnote("Una fila vacía no aparece en pantalla hasta que tenga contenido.")
     // The list can arrive after the sheet's own request for focus has given up.
     LaunchedEffect(rows != null) { if (!rows.isNullOrEmpty()) firstFocus.requestWhenReady() }
 }

@@ -197,7 +197,7 @@ fun TileView(
                 onFocused(it.isFocused, bounds())
             }
             // Held on a tile with no menu, OK is a press like any other.
-            .tilePress(onClick, { if (menu) onLongPress(bounds()) else onClick() }, clickLabel = "Open", longPressLabel = if (menu) "Options" else null, opens = tile.action.isNotEmpty())
+            .tilePress(onClick, { if (menu) onLongPress(bounds()) else onClick() }, clickLabel = "Abrir", longPressLabel = if (menu) "Opciones" else null, opens = tile.action.isNotEmpty())
             .focusable()
             .semantics { contentDescription = spoken }
             // Two layers on purpose: the glow redraws every frame of a focus change, and inside the
@@ -241,21 +241,21 @@ internal fun tileDescription(tile: Tile, rowName: String): String = buildString 
     tile.subtitle?.let { append(", ").append(spokenEpisodes(it)) }
     tile.timeLeft?.takeIf { it != tile.subtitle }?.let { append(", ").append(it) }
     when (tile.badge) {
-        Badge.LIVE -> append(", live")
-        Badge.NEW -> append(", new")
-        Badge.CONNECTED -> append(", connected")
+        Badge.LIVE -> append(", en vivo")
+        Badge.NEW -> append(", nuevo")
+        Badge.CONNECTED -> append(", conectado")
         else -> Unit
     }
-    if (tile.stagePinned) append(", pinned to the Stage")
-    if (tile.pinned) append(", pinned")
-    if (tile.hidden) append(", hidden from every row")
+    if (tile.stagePinned) append(", fijado en portada")
+    if (tile.pinned) append(", fijado")
+    if (tile.hidden) append(", oculto de todas las filas")
 }
 
 private val episodeCode = Regex("\\bS(\\d+) E(\\d+)\\b")
 
 /** "S2 E4" as "Season 2, Episode 4", so a screen reader does not spell it out. */
 internal fun spokenEpisodes(text: String): String =
-    text.replace(episodeCode) { "Season ${it.groupValues[1]}, Episode ${it.groupValues[2]}" }
+    text.replace(episodeCode) { "Temporada ${it.groupValues[1]}, Episodio ${it.groupValues[2]}" }
 
 /** A small pin on a `velvet` disc, the same on every tile style (DESIGN.md §7.3). */
 @Composable
@@ -506,7 +506,7 @@ private fun AppBannerContent(tile: Tile, filter: () -> androidx.compose.ui.graph
             Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
                 Text(tile.title, style = LoungeTheme.typography.title, color = colors.limelight, maxLines = 2, overflow = TextOverflow.Ellipsis)
                 // Two tiles have a line under the name: All apps says how many it opens onto, a hidden app that it is hidden.
-                (tile.subtitle ?: "Hidden".takeIf { tile.hidden })?.let { Text(it, style = LoungeTheme.typography.caption, color = colors.dust, maxLines = 1) }
+                (tile.subtitle ?: "Oculto".takeIf { tile.hidden })?.let { Text(it, style = LoungeTheme.typography.caption, color = colors.dust, maxLines = 1) }
             }
         }
     }
@@ -556,8 +556,8 @@ private fun TileBadge(badge: Badge?, modifier: Modifier) {
     Box(modifier.background(colors.velvet.copy(alpha = 0.85f), RoundedCornerShape(14.dp)).padding(horizontal = 10.dp, vertical = 2.dp)) {
         when (badge) {
             // Reads idle here, so only the badge recomposes for it.
-            Badge.LIVE -> BadgeView("Live", dot = colors.ember, idle = LoungeTheme.lightState.idle)
-            else -> BadgeView("New", textColor = colors.houselight)
+            Badge.LIVE -> BadgeView("En vivo", dot = colors.ember, idle = LoungeTheme.lightState.idle)
+            else -> BadgeView("Nuevo", textColor = colors.houselight)
         }
     }
 }

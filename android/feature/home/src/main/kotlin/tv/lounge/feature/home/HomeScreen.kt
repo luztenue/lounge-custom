@@ -199,7 +199,7 @@ fun HomeScreen(core: CoreClient, platform: AndroidPlatform, prefs: Prefs, uiPref
 
     // The updater's notice tile and the one-time word after an update.
     LaunchedEffect(updates) {
-        updates.takeJustUpdatedFrom()?.let { say("Lounge updated to ${updates.currentVersion}") }
+        updates.takeJustUpdatedFrom()?.let { say("Lounge actualizado a ${updates.currentVersion}") }
         updates.state.collect { s ->
             val waiting = s is tv.lounge.update.UpdateState.NeedsConfirmation ||
                 (s is tv.lounge.update.UpdateState.Ready && s.path == tv.lounge.update.InstallPath.NeedsPermission)
@@ -527,7 +527,7 @@ fun HomeScreen(core: CoreClient, platform: AndroidPlatform, prefs: Prefs, uiPref
                 android.util.Log.w("Lounge", "background: ${liveStyle.id} falls back to the still field: $why")
                 liveFailed = true
                 // A compile error's own text is for the log, not the screen (DESIGN.md §8).
-                say(if ("too heavy" in why) "${liveStyle.name} is too heavy for this TV, so the background is still" else "${liveStyle.name} could not be drawn on this TV, so the background is still")
+                say(if ("too heavy" in why) "${liveStyle.name} es muy pesado para este TV; se dejó el fondo fijo" else "No se pudo renderizar ${liveStyle.name}; se dejó el fondo fijo")
             })
         } else {
             LightField(light)
@@ -548,7 +548,7 @@ fun HomeScreen(core: CoreClient, platform: AndroidPlatform, prefs: Prefs, uiPref
                 onSettings = { uiSounds?.open(); openOverlay(Overlay.QuickSettings) },
                 modifier = Modifier.graphicsLayer { alpha = roomAlpha.value },
             )
-            Spacer(Modifier.height(34.dp))
+            Spacer(Modifier.height(12.dp))
             Box(Modifier.fillMaxSize()) {
                 // The rows keep one layout whatever the Stage does: a layer translation moves them
                 // and a clip hides what sits under the lowered Stage, so neither the proscenium
@@ -693,7 +693,7 @@ fun HomeScreen(core: CoreClient, platform: AndroidPlatform, prefs: Prefs, uiPref
             GuideSheet(
                 loadGuide = { from -> core.guide(from, 3u) },
                 visibleState = visibleState,
-                onTune = { action -> uiSounds?.open(); perform(action, "that channel") },
+                onTune = { action -> uiSounds?.open(); perform(action, "ese canal") },
                 onDismiss = { closeOverlay() },
             )
         }
@@ -760,18 +760,18 @@ fun HomeScreen(core: CoreClient, platform: AndroidPlatform, prefs: Prefs, uiPref
                     canMoveLeft = indexInRow(ov.rowId, ov.tile.id) > 0,
                     canMoveRight = indexInRow(ov.rowId, ov.tile.id).let { at -> at >= 0 && (homeRow?.tiles?.getOrNull(at + 1)?.pinned == true) },
                     isStagePinned = ov.tile.stagePinned,
-                    onHide = { core.command(LayoutCommand.HideItem(ov.tile.id)); say("Hidden from every row") },
-                    onShow = { core.command(LayoutCommand.UnhideItem(ov.tile.id)); say("Shown on every row again") },
+                    onHide = { core.command(LayoutCommand.HideItem(ov.tile.id)); say("Ocultado de todas las filas") },
+                    onShow = { core.command(LayoutCommand.UnhideItem(ov.tile.id)); say("Visible en todas las filas de nuevo") },
                     onHideAllFrom = {
                         ov.tile.provider?.let { core.command(LayoutCommand.MuteProvider(it)) }
-                        say("Everything from ${ov.tile.providerName} hidden. Settings, Rows brings it back")
+                        say("Todo lo de ${ov.tile.providerName} oculto. Recuperable en Ajustes > Filas")
                     },
                     onHideRow = {
                         core.command(LayoutCommand.HideRow(ov.rowId))
-                        say("${homeRow?.title ?: "Row"} hidden. Settings, Rows brings it back")
+                        say("${homeRow?.title ?: "Fila"} oculta. Recuperable en Ajustes > Filas")
                     },
-                    onPin = { core.command(LayoutCommand.PinApp(pkg)); say("Pinned to the front of Your apps") },
-                    onUnpin = { core.command(LayoutCommand.UnpinApp(pkg)); say("Unpinned from Your apps") },
+                    onPin = { core.command(LayoutCommand.PinApp(pkg)); say("Fijada al inicio de Tus apps") },
+                    onUnpin = { core.command(LayoutCommand.UnpinApp(pkg)); say("Desfijada de Tus apps") },
                     // The tile's place in Your apps now, wherever its menu was opened from.
                     onMoveLeft = {
                         val at = indexInRow(ov.rowId, ov.tile.id)
@@ -781,8 +781,8 @@ fun HomeScreen(core: CoreClient, platform: AndroidPlatform, prefs: Prefs, uiPref
                         val at = indexInRow(ov.rowId, ov.tile.id)
                         if (at >= 0) core.command(LayoutCommand.MoveApp(pkg, (at + 1).toUInt()))
                     },
-                    onPinStage = { core.command(LayoutCommand.PinToStage(ov.tile.id)); say("Pinned to the Stage") },
-                    onUnpinStage = { core.command(LayoutCommand.UnpinFromStage(ov.tile.id)); say("Unpinned from the Stage") },
+                    onPinStage = { core.command(LayoutCommand.PinToStage(ov.tile.id)); say("Fijado en portada") },
+                    onUnpinStage = { core.command(LayoutCommand.UnpinFromStage(ov.tile.id)); say("Desfijado de portada") },
                     onAppInfo = { perform("info:${ov.tile.id}", ov.tile.title) },
                     onUninstall = { requestUninstall(context, pkg) },
                     onPlay = { openPlayListing(context, pkg) },
@@ -897,7 +897,7 @@ private fun Overlay.sheetDepth(): Int = when (this) {
 }
 
 private fun rowTitle(snapshot: HomeSnapshot, rowId: String): String =
-    snapshot.rows.firstOrNull { it.id == rowId }?.title ?: if (rowId == "stage") "the Stage" else "the home screen"
+    snapshot.rows.firstOrNull { it.id == rowId }?.title ?: if (rowId == "stage") "la portada" else "la pantalla de inicio"
 
 /**
  * A failure to open [title] as a sentence with its cause and its fix (DESIGN.md §7.4, §10). The
@@ -915,20 +915,20 @@ internal fun friendlyReason(e: Throwable, reason: String, title: String): String
     return when {
         // A plugin's own sentence, and the host's for one that stopped, show as written.
         e is tv.lounge.core.CoreException.Plugin && readsAsSentence(reason) -> reason.trim()
-        e is tv.lounge.core.CoreException.DiskFull -> "The TV's storage is full. Free some space in the TV's settings, then try again."
+        e is tv.lounge.core.CoreException.DiskFull -> "El almacenamiento del TV está lleno. Libera espacio en Ajustes e intenta de nuevo."
         e is tv.lounge.core.CoreException.UnknownAction -> "$title isn't on this TV any more. Its app may have removed it."
         "no activity found" in m || "activitynotfound" in m || "no launch intent" in m || "nothing can open" in m ->
-            "Nothing on this TV can open $title. Is its app still installed?"
-        "not installed" in m -> "$title isn't installed on this TV. Install it from the Play Store, then try again."
-        "no video player" in m -> "Nothing on this TV can play $title. Install VLC or another video player, then try again."
-        "notification access" in m -> "Lounge can't reach what's playing yet. In Settings, turn on Now playing."
-        "not playing" in m -> "That app has stopped playing. Open it to start something again."
-        "did not answer" in m || "didn't answer" in m -> "$title's source didn't answer. Check that it is running, then try again."
-        "busy" in m -> "The TV is busy. Try again in a moment."
-        "won't open that link" in m || "not one lounge can open" in m -> "Lounge can't open $title from here. Open it from its app instead."
-        "permission" in m || "not allowed" in m || "security" in m -> "Android didn't let Lounge open $title. Open it from its app instead."
+            "Nada en este TV puede abrir $title. ¿Sigue instalada la app?"
+        "not installed" in m -> "$title no está instalada en este TV. Instálala desde Play Store e intenta de nuevo."
+        "no video player" in m -> "Nada puede reproducir $title. Instala VLC u otro reproductor e intenta de nuevo."
+        "notification access" in m -> "Lounge no puede leer lo que suena. Activa Reproduciendo ahora en Ajustes."
+        "not playing" in m -> "Esa app dejó de reproducir. Ábrela para iniciar de nuevo."
+        "did not answer" in m || "didn't answer" in m -> "La fuente de $title no respondió. Verifica que esté funcionando e intenta de nuevo."
+        "busy" in m -> "El TV está ocupado. Intenta en un momento."
+        "won't open that link" in m || "not one lounge can open" in m -> "Lounge no puede abrir $title desde aquí. Ábrelo desde su app."
+        "permission" in m || "not allowed" in m || "security" in m -> "Android no permitió abrir $title. Ábrelo desde su propia app."
         e is tv.lounge.core.CoreException.Plugin -> "$title's plugin stopped partway through. Try again in a moment."
-        else -> "Couldn't open $title. Try again in a moment."
+        else -> "No se pudo abrir $title. Intenta en un momento."
     }
 }
 
@@ -994,7 +994,7 @@ private fun SheetContent(
                 value = withContext(Dispatchers.IO) {
                     // Only rows the person hid count.
                     val hidden = core.homeRows().count { !it.shown && it.chosen }
-                    if (hidden == 0) "All shown" else if (hidden == 1) "1 hidden" else "$hidden hidden"
+                    if (hidden == 0) "Todas visibles" else if (hidden == 1) "1 oculta" else "$hidden ocultas"
                 }
             }
             QuickSettingsSheet(

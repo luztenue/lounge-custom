@@ -108,9 +108,9 @@ import tv.lounge.design.lightGlow
 private const val TEXT_OUT = 0.4f
 private const val TEXT_IN_DELAY = 0.35f
 
-/** Expanded Stage height: artwork 630 + gap 32 + strip 130 + gap 32 (DESIGN.md §5.1). */
-val StageExpandedHeight = 630.dp + 32.dp + Dimens.stripTileHeight + 32.dp
-val StageCollapsedHeight = Dimens.collapsedStageHeight + 32.dp
+/** Expanded Stage height: compact panoramic layout using Dimens.stageArtworkHeight + strip. */
+val StageExpandedHeight = Dimens.stageArtworkHeight + 12.dp + Dimens.stripTileHeight + 12.dp
+val StageCollapsedHeight = Dimens.collapsedStageHeight + 16.dp
 
 /**
  * The Stage: playbill, artwork and strip when expanded; a 200 dp band when focus is in the rows.
@@ -333,7 +333,7 @@ internal class FrameGeometry(density: Density, private val focalY: Float) {
     val bandH = with(density) { Dimens.collapsedStageHeight.toPx() }
     private val artW = with(density) { Dimens.stageArtworkWidth.toPx() }
     private val artH = with(density) { Dimens.stageArtworkHeight.toPx() }
-    private val artX = with(density) { (Dimens.safeX + Dimens.playbillWidth + 48.dp).toPx() }
+    private val artX = safe + bandW - artW
     private val radius = with(density) { Dimens.stageRadius.toPx() }
     private val pictureH = bandW * 9f / 16f
 
@@ -457,7 +457,7 @@ private fun ExpandedStage(
     // An empty home has no strip to go down to.
     val hasStrip = stage.strip.isNotEmpty()
     Column(modifier) {
-        Row(Modifier.padding(horizontal = Dimens.safeX).height(630.dp)) {
+        Row(Modifier.fillMaxWidth().padding(horizontal = Dimens.safeX).height(Dimens.stageArtworkHeight)) {
             Box(
                 Modifier
                     .width(Dimens.playbillWidth)
@@ -476,7 +476,7 @@ private fun ExpandedStage(
                     EmptyPlaybill(indexed, onStart, playbillFocus, interactive)
                 }
             }
-            Spacer(Modifier.width(48.dp))
+            Spacer(Modifier.weight(1f))
             when {
                 spotlight == null -> Box(Modifier.size(Dimens.stageArtworkWidth, Dimens.stageArtworkHeight).clip(RoundedCornerShape(Dimens.stageRadius))) {
                     EmptyStageArt(LoungeTheme.colors.houselight)
@@ -486,7 +486,7 @@ private fun ExpandedStage(
                 else -> Unit
             }
         }
-        Spacer(Modifier.height(32.dp))
+        Spacer(Modifier.height(12.dp))
         StageStrip(
             strip = stage.strip,
             spotlights = stage.spotlights,
@@ -638,10 +638,12 @@ private fun StageArtwork(spotlight: StageSpotlight, modifier: Modifier) {
 /** A framed spotlight's banner at its native 640×360, lit by a shadow, over the frame's backdrop. */
 @Composable
 private fun FramedBanner(spotlight: StageSpotlight, modifier: Modifier) {
+    val artW = Dimens.stageArtworkWidth.value
+    val artH = Dimens.stageArtworkHeight.value
     val frame = when {
-        spotlight.kind == SpotlightKind.APP || spotlight.kind == SpotlightKind.GAME || spotlight.kind == SpotlightKind.DEVICE -> DpSize(640.dp, 360.dp)
-        spotlight.artAspect > 0f -> DpSize((630f * spotlight.artAspect).coerceAtMost(1120f).dp, 630.dp)
-        else -> DpSize(640.dp, 360.dp)
+        spotlight.kind == SpotlightKind.APP || spotlight.kind == SpotlightKind.GAME || spotlight.kind == SpotlightKind.DEVICE -> DpSize(artW.dp, artH.dp)
+        spotlight.artAspect > 0f -> DpSize((artH * spotlight.artAspect).coerceAtMost(artW).dp, artH.dp)
+        else -> DpSize(artW.dp, artH.dp)
     }
     Box(modifier.size(Dimens.stageArtworkWidth, Dimens.stageArtworkHeight), contentAlignment = Alignment.Center) {
         AsyncImage(
@@ -756,23 +758,22 @@ private fun Playbill(
         // title keeps to one line and the secondary button goes too (DESIGN.md §4.1, §11).
         val large = density.fontScale >= 1.29f
         val larger = density.fontScale > 1.31f
-        val titleLines = if (larger) 1 else 2
-        val titleBlock = with(density) { type.displayXl.lineHeight.toDp() } * titleLines
+        val titleLines = 1
+        val titleStyle = type.displayXl.copy(fontSize = type.displayXl.fontSize * 0.72f, lineHeight = type.displayXl.lineHeight * 0.72f)
+        val titleBlock = with(density) { titleStyle.lineHeight.toDp() } * titleLines
         val captionLine = with(density) { type.caption.lineHeight.toDp() }
-        Column(Modifier.fillMaxSize().padding(bottom = 6.dp), verticalArrangement = Arrangement.Bottom) {
+        Column(Modifier.fillMaxSize().padding(bottom = 2.dp), verticalArrangement = Arrangement.Bottom) {
             PlaybillPart(spotlight) { s ->
                 Column {
                     Box(Modifier.height(metaLine)) {
                         Text(s.category, style = type.meta, color = colors.dust, maxLines = 1)
                     }
-                    Spacer(Modifier.height(16.dp))
+                    Spacer(Modifier.height(4.dp))
                     Box(Modifier.height(titleBlock), contentAlignment = Alignment.BottomStart) {
-                        // Measured without the slot's height, which the display font's first line
-                        // can overrun, so a title that needs two lines gets them, cut at a word.
-                        val title = rememberFittedLines(s.title, type.displayXl, Dimens.playbillWidth, titleLines)
+                        val title = rememberFittedLines(s.title, titleStyle, Dimens.playbillWidth, titleLines)
                         Text(
                             title,
-                            style = type.displayXl,
+                            style = titleStyle,
                             color = colors.limelight,
                             maxLines = titleLines,
                             overflow = TextOverflow.Ellipsis,
@@ -781,21 +782,21 @@ private fun Playbill(
                     }
                 }
             }
-            Spacer(Modifier.height(16.dp))
+            Spacer(Modifier.height(6.dp))
             PlaybillPart(spotlight, delayMs = 40) { s ->
                 Column {
-                    Column(Modifier.height(metaLine * 2 + 4.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
-                        s.lines.take(2).forEachIndexed { i, line ->
+                    Column(Modifier.height(metaLine), verticalArrangement = Arrangement.spacedBy(2.dp)) {
+                        s.lines.take(1).forEachIndexed { i, line ->
                             Text(line, style = type.meta, color = if (i == 0) colors.limelight else colors.dust, maxLines = 1, overflow = TextOverflow.Ellipsis)
                         }
                     }
-                    Spacer(Modifier.height(12.dp))
+                    Spacer(Modifier.height(6.dp))
                     Box(Modifier.height(6.dp)) {
                         s.progress?.let { ProgressBar(it, Modifier.width(420.dp), thickness = 6.dp) }
                     }
                 }
             }
-            Spacer(Modifier.height(24.dp))
+            Spacer(Modifier.height(10.dp))
             PlaybillPart(spotlight, delayMs = 80) { s ->
                 Column {
                     Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
@@ -805,7 +806,7 @@ private fun Playbill(
                         s.secondary?.takeUnless { larger }?.let { LoungeButton(it.label, onClick = { onSecondary(s) }, kind = ButtonKind.Secondary, enabled = interactive && live) }
                     }
                     if (!large) {
-                        Spacer(Modifier.height(16.dp))
+                        Spacer(Modifier.height(4.dp))
                         Box(Modifier.height(captionLine)) {
                             s.explanation?.let { why ->
                                 Text(why, style = type.caption, color = colors.dust, maxLines = 1, overflow = TextOverflow.Ellipsis)

@@ -205,7 +205,7 @@ fun AllAppsScreen(
                 }
                 .focusGroup()
                 .focusProperties { if (leaving) canFocus = false }
-                .semantics { paneTitle = "All apps" },
+                .semantics { paneTitle = "Todas las apps" },
         ) {
             // The grid comes first so the heading paints over it: scrolled rows pass under a fade
             // rather than through the words. The keyboard covers the grid's lower rows rather than
@@ -245,7 +245,7 @@ fun AllAppsScreen(
                                                         }
                                                     }
                                                     .focusable()
-                                                    .semantics { contentDescription = if (c == '#') "Apps starting with a number or symbol" else "Apps starting with $c" }
+                                                    .semantics { contentDescription = if (c == '#') "Apps que empiezan con número o símbolo" else "Apps que empiezan con $c" }
                                             } else {
                                                 Modifier
                                             },
@@ -274,7 +274,7 @@ fun AllAppsScreen(
                     Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(16.dp)) {
                         Icon(LoungeIcons.Apps, contentDescription = null, tint = colors.dust, modifier = Modifier.size(32.dp))
                         Text(
-                            if (query.isEmpty()) "Apps appear here once they are installed." else "No app is called “$query”. Back clears the search.",
+                            if (query.isEmpty()) "Las apps aparecerán aquí al instalarse." else "No hay ninguna app llamada “$query”. Atrás borra la búsqueda.",
                             style = LoungeTheme.typography.meta,
                             color = colors.dust,
                         )
@@ -303,7 +303,7 @@ fun AllAppsScreen(
                                     kind = TileKind.APP_BANNER,
                                     size = size,
                                     lights = lights,
-                                    rowName = "All apps",
+                                    rowName = "Todas las apps",
                                     focusRequester = requester(index),
                                     onFocused = { focused, _ ->
                                         if (focused) {
@@ -343,20 +343,20 @@ fun AllAppsScreen(
                         verticalAlignment = Alignment.Top,
                     ) {
                         Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                            Text("All apps", style = LoungeTheme.typography.displayL, color = colors.limelight, modifier = Modifier.semantics { heading() })
+                            Text("Todas las apps", style = LoungeTheme.typography.displayL, color = colors.limelight, modifier = Modifier.semantics { heading() })
                             Text(
                                 modifier = Modifier.semantics { liveRegion = LiveRegionMode.Polite },
                                 text = when {
-                                    apps.isEmpty() -> "Nothing here yet."
-                                    query.isNotEmpty() && shown.isEmpty() -> "Nothing matches “$query”."
-                                    query.isNotEmpty() -> "${shown.size} of ${apps.size} match “$query”."
+                                    apps.isEmpty() -> "Nada por aquí todavía."
+                                    query.isNotEmpty() && shown.isEmpty() -> "Sin resultados para “$query”."
+                                    query.isNotEmpty() -> "${shown.size} de ${apps.size} coinciden con “$query”."
                                     else -> "${apps.size} ${if (apps.size == 1) "app" else "apps"}, ${sortLine(sortNow)}."
                                 },
                                 style = LoungeTheme.typography.meta,
                                 color = colors.dust,
                             )
                             Text(
-                                if (alphabetical) "Hold OK on an app to pin it to Your apps. Up to search or sort, Left for the alphabet." else "Hold OK on an app to pin it to Your apps. Up to search or sort.",
+                                if (alphabetical) "Mantén OK en una app para fijarla en Tus apps. Arriba para buscar/ordenar, Izquierda para el abecedario." else "Mantén OK en una app para fijarla en Tus apps. Arriba para buscar u ordenar.",
                                 style = LoungeTheme.typography.caption,
                                 color = colors.dust,
                             )
@@ -395,9 +395,9 @@ private fun SortPill(sort: String, onSetSort: (String) -> Unit) {
             .background(if (focused) colors.curtainEdge else colors.curtain)
             .focusRim(colors, { if (focused) 1f else 0f }, 24.dp)
             .onFocusChanged { focused = it.isFocused }
-            .tilePress(next, next, clickLabel = "Change the order")
+            .tilePress(next, next, clickLabel = "Cambiar orden")
             .focusable()
-            .semantics { role = Role.Button; contentDescription = "Sorted ${sortLabel(sort)}. OK changes the order" }
+            .semantics { role = Role.Button; contentDescription = "Ordenado por ${sortLabel(sort)}. OK cambia el orden" }
             .height(48.dp)
             .padding(horizontal = 18.dp),
         verticalAlignment = Alignment.CenterVertically,
@@ -428,7 +428,7 @@ private fun SearchField(field: TextFieldValue, onChange: (TextFieldValue) -> Uni
         Row(Modifier.height(48.dp).padding(horizontal = 6.dp), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(12.dp)) {
             Icon(LoungeIcons.Search, contentDescription = null, tint = if (focused) colors.houselight else colors.dust, modifier = Modifier.size(24.dp))
             Box(Modifier.weight(1f)) {
-                if (field.text.isEmpty()) Text("Find an app", style = LoungeTheme.typography.title, color = colors.dust, maxLines = 1, overflow = TextOverflow.Ellipsis)
+                if (field.text.isEmpty()) Text("Buscar una app", style = LoungeTheme.typography.title, color = colors.dust, maxLines = 1, overflow = TextOverflow.Ellipsis)
                 BasicTextField(
                     value = field,
                     onValueChange = onChange,
@@ -441,7 +441,7 @@ private fun SearchField(field: TextFieldValue, onChange: (TextFieldValue) -> Uni
                         .fillMaxWidth()
                         .focusRequester(focusRequester)
                         .onFocusChanged { focused = it.isFocused; onFocused(it.isFocused) }
-                        .semantics { contentDescription = "Find an app" },
+                        .semantics { contentDescription = "Buscar una app" },
                 )
             }
         }
@@ -457,15 +457,15 @@ private val ALPHABET: List<Char> = listOf('#') + ('A'..'Z')
 private val SORTS = listOf(Prefs.SORT_AZ, Prefs.SORT_OPENED, Prefs.SORT_INSTALLED)
 
 private fun sortLabel(sort: String) = when (sort) {
-    Prefs.SORT_OPENED -> "Recently opened"
-    Prefs.SORT_INSTALLED -> "Recently installed"
-    else -> "A to Z"
+    Prefs.SORT_OPENED -> "Abiertas recientemente"
+    Prefs.SORT_INSTALLED -> "Instaladas recientemente"
+    else -> "A - Z"
 }
 
 private fun sortLine(sort: String) = when (sort) {
-    Prefs.SORT_OPENED -> "most recently opened first"
-    Prefs.SORT_INSTALLED -> "newest first"
-    else -> "A to Z"
+    Prefs.SORT_OPENED -> "más recientes primero"
+    Prefs.SORT_INSTALLED -> "más nuevas primero"
+    else -> "A - Z"
 }
 
 private val collator: java.text.Collator = java.text.Collator.getInstance().apply { strength = java.text.Collator.PRIMARY }

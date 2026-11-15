@@ -119,7 +119,7 @@ fun NowPlayingCard(
                     .lightGlow(light, 0.22f, radius = 60.dp, cornerRadius = 20.dp)
                     .clip(RoundedCornerShape(20.dp))
                     .background(colors.curtain)
-                    .semantics { paneTitle = "Now playing" }
+                    .semantics { paneTitle = "Reproduciendo ahora" }
                     .onPreviewKeyEvent { e -> if (e.isBack() && e.type == KeyEventType.KeyUp) { onDismiss(); true } else false }
                     .focusProperties { canFocus = !leaving }
                     .trapFocus(leaving)
@@ -142,18 +142,18 @@ fun NowPlayingCard(
                     }
                     Spacer(Modifier.weight(1f))
                     Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                        TransportButton(LoungeIcons.SkipPrevious, "Previous", np.canSkipPrevious, light) { onCommand("previous") }
+                        TransportButton(LoungeIcons.SkipPrevious, "Anterior", np.canSkipPrevious, light) { onCommand("previous") }
                         TransportButton(
                             if (playing) LoungeIcons.Pause else LoungeIcons.Play,
-                            if (playing) "Pause" else "Play",
+                            if (playing) "Pausa" else "Reproducir",
                             if (playing) np.canPause else np.canPlay,
                             light,
                             primary = true,
                             focusRequester = firstFocus,
                         ) { onCommand("play-pause") }
-                        TransportButton(LoungeIcons.SkipNext, "Next", np.canSkipNext, light) { onCommand("next") }
+                        TransportButton(LoungeIcons.SkipNext, "Siguiente", np.canSkipNext, light) { onCommand("next") }
                         Spacer(Modifier.weight(1f))
-                        LoungeButton("Open", onClick = onOpenApp, kind = ButtonKind.Secondary)
+                        LoungeButton("Abrir", onClick = onOpenApp, kind = ButtonKind.Secondary)
                     }
                     if (progress != null) {
                         Spacer(Modifier.height(14.dp))

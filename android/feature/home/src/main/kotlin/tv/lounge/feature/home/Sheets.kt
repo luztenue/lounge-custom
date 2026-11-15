@@ -426,9 +426,9 @@ fun QuickSettingsSheet(
         )
         SheetRow(
             icon = SettingsGlyphs.PhoneApps,
-            title = "Phone apps in All apps",
-            subtitle = "Apps made for phones, which may not work well with a remote",
-            value = if (showMobileApps) "On" else "Off",
+            title = "Apps de teléfono en Todas las apps",
+            subtitle = "Apps hechas para celular; pueden no funcionar bien con el control",
+            value = if (showMobileApps) "Activado" else "Desactivado",
             accent = if (showMobileApps) colors.signal else colors.dust,
             onClick = { sounds0?.tick(); onSetShowMobileApps(!showMobileApps) },
             onCycle = { sounds0?.tick(); onSetShowMobileApps(!showMobileApps) },
@@ -437,21 +437,21 @@ fun QuickSettingsSheet(
             icon = LoungeIcons.Guide,
             title = "Canales de aplicaciones",
             subtitle = "Filas que publican las apps del TV",
-            value = if (enabledChannels == 0) "None" else "$enabledChannels on",
+            value = if (enabledChannels == 0) "Ninguno" else "$enabledChannels activos",
             onClick = onChannels,
             focusRequester = focusFor(Overlay.Channels),
         )
         SheetRow(
             icon = SettingsGlyphs.Plugin,
             title = "Complementos y Extensiones",
-            subtitle = "Rows, channels and guide data from your services",
-            value = if (enabledPlugins == 0) "None on" else "$enabledPlugins on",
+            subtitle = "Filas, canales y guía de tus servicios",
+            value = if (enabledPlugins == 0) "Ninguno" else "$enabledPlugins activos",
             onClick = onPlugins,
             focusRequester = focusFor(Overlay.Plugins),
         )
         Spacer(Modifier.height(16.dp))
         Hairline(Modifier.fillMaxWidth())
-        SheetGroup("Look and sound")
+        SheetGroup("Apariencia y sonido")
         SheetRow(
             icon = LoungeIcons.Theme,
             title = "Tema visual",
@@ -459,13 +459,13 @@ fun QuickSettingsSheet(
             onClick = { sounds0?.tick(); onSetTheme(theme.step(1)) },
             onCycle = { by -> sounds0?.tick(); onSetTheme(theme.step(by)) },
         )
-        val scenes = listOf(Triple(Prefs.STILL_BACKDROP, "Still", "The room's own light")) + backdrops.map { Triple(it.id, it.name, it.description ?: it.origin) }
+        val scenes = listOf(Triple(Prefs.STILL_BACKDROP, "Fijo", "La luz propia de la sala")) + backdrops.map { Triple(it.id, it.name, it.description ?: it.origin) }
         val sceneAt = scenes.indexOfFirst { it.first == backdrop }.coerceAtLeast(0)
         SheetRow(
             icon = SettingsGlyphs.Scene,
-            title = "Background",
+            title = "Fondo",
             value = scenes[sceneAt].second,
-            subtitle = if (!liveBackdrops && sceneAt > 0) "Still while Lite mode or Reduce motion is on" else scenes[sceneAt].third,
+            subtitle = if (!liveBackdrops && sceneAt > 0) "Fijo mientras el modo Ligero o Reducir movimiento estén activos" else scenes[sceneAt].third,
             onClick = { sounds0?.tick(); onSetBackdrop(scenes[(sceneAt + 1).mod(scenes.size)].first) },
             onCycle = { by -> sounds0?.tick(); onSetBackdrop(scenes[(sceneAt + by).mod(scenes.size)].first) },
         )
@@ -479,56 +479,56 @@ fun QuickSettingsSheet(
         )
         SheetRow(
             icon = LoungeIcons.Volume,
-            title = "Sounds",
-            value = if (sounds) "On" else "Off",
+            title = "Sonidos",
+            value = if (sounds) "Activado" else "Desactivado",
             accent = if (sounds) colors.signal else colors.dust,
             onClick = { sounds0?.tick(); onSetSounds(!sounds) },
             onCycle = { sounds0?.tick(); onSetSounds(!sounds) },
         )
         SheetRow(
             icon = SettingsGlyphs.Gauge,
-            title = "Lite mode",
+            title = "Modo ligero",
             subtitle = when (lite) {
-                null -> if (liteNow) "On for this TV now: no moving light or live backgrounds" else "Off for this TV now; on, it stops the moving light and live backgrounds"
-                true -> "No moving light or live backgrounds, so the TV stays quick"
-                false -> "The moving light and live backgrounds stay on"
+                null -> if (liteNow) "Activado en este TV: sin luces móviles ni fondos animados" else "Desactivado ahora; si lo activas, detiene luces móviles y fondos animados"
+                true -> "Sin luces móviles ni fondos animados para mayor fluidez"
+                false -> "Las luces móviles y fondos animados siguen activos"
             },
             subtitleLines = WHOLE,
-            value = when (lite) { null -> "Automatic"; true -> "On"; false -> "Off" },
+            value = when (lite) { null -> "Automático"; true -> "Activado"; false -> "Desactivado" },
             onClick = { sounds0?.tick(); onSetLite(lite.stepTri(1)) },
             onCycle = { by -> sounds0?.tick(); onSetLite(lite.stepTri(by)) },
         )
         SheetRow(
             icon = LoungeIcons.Move,
-            title = "Reduce motion",
-            value = when (reducedMotion) { null -> "Follow system"; true -> "On"; false -> "Off" },
+            title = "Reducir movimiento",
+            value = when (reducedMotion) { null -> "Según el sistema"; true -> "Activado"; false -> "Desactivado" },
             onClick = { sounds0?.tick(); onSetReducedMotion(reducedMotion.stepTri(1)) },
             onCycle = { by -> sounds0?.tick(); onSetReducedMotion(reducedMotion.stepTri(by)) },
         )
         Spacer(Modifier.height(16.dp))
         Hairline(Modifier.fillMaxWidth())
-        SheetGroup("Access")
+        SheetGroup("Permisos y acceso")
         Access.entries.forEach { a -> AccessRow(a, access) }
         Spacer(Modifier.height(16.dp))
         Hairline(Modifier.fillMaxWidth())
-        SheetGroup("This TV")
+        SheetGroup("Este televisor")
         SheetRow(
             icon = SettingsGlyphs.Home,
-            title = "Default home screen",
-            subtitle = "What the Home button opens",
-            value = if (isDefaultHome) "Lounge" else "Set up",
+            title = "Pantalla de inicio predeterminada",
+            subtitle = "Lo que abre el botón Inicio (Home)",
+            value = if (isDefaultHome) "Lounge" else "Configurar",
             accent = if (isDefaultHome) colors.signal else colors.dust,
             onClick = onRecheckHome,
             focusRequester = focusFor(Overlay.HomeRole),
         )
         SheetRow(
             icon = LoungeIcons.Power,
-            title = "Power Setup",
-            subtitle = "Lets Lounge do what an app can't on its own",
+            title = "Configuración Avanzada (ADB)",
+            subtitle = "Permite a Lounge hacer ajustes que una app normal no puede",
             value = when (powerStatus) {
-                is tv.lounge.power.PowerStatus.Ready -> "Connected"
-                tv.lounge.power.PowerStatus.WaitingForApproval -> "Waiting for you"
-                else -> "Not connected"
+                is tv.lounge.power.PowerStatus.Ready -> "Conectado"
+                tv.lounge.power.PowerStatus.WaitingForApproval -> "Esperando tu confirmación"
+                else -> "No conectado"
             },
             accent = if (powerStatus is tv.lounge.power.PowerStatus.Ready) colors.signal else colors.dust,
             onClick = onPowerSetup,
@@ -537,18 +537,18 @@ fun QuickSettingsSheet(
         SheetRow(
             icon = LoungeIcons.Phone,
             title = "Control desde el móvil",
-            value = if (companionOn) "On" else "Off",
+            value = if (companionOn) "Activado" else "Desactivado",
             accent = if (companionOn) colors.signal else colors.dust,
             onClick = onCompanion,
             focusRequester = focusFor(Overlay.Companion),
         )
         SheetRow(
             icon = SettingsGlyphs.Download,
-            title = "Updates",
+            title = "Actualizaciones",
             value = updateStatus,
             accent = when {
-                updateStatus == "Up to date" -> colors.signal
-                updateStatus == "Problem" -> colors.ember
+                updateStatus == "Al día" -> colors.signal
+                updateStatus == "Error" -> colors.ember
                 updateStatus.endsWith(" available") || updateStatus.endsWith(" ready") -> colors.houselight
                 else -> colors.dust
             },
@@ -557,33 +557,33 @@ fun QuickSettingsSheet(
         )
         SheetRow(
             icon = LoungeIcons.Info,
-            title = "Diagnostics",
-            subtitle = "Numbers to include when you report a problem",
-            value = if (showDiagnostics) "Hide" else "Show",
+            title = "Diagnóstico",
+            subtitle = "Datos técnicos para diagnosticar problemas",
+            value = if (showDiagnostics) "Ocultar" else "Mostrar",
             onClick = { showDiagnostics = !showDiagnostics },
         )
         if (showDiagnostics) {
             diag?.let { d ->
                 Column(Modifier.padding(start = 20.dp, top = 4.dp, bottom = 8.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
-                    DiagLine("Things Lounge knows about", d.items.toString())
-                    DiagLine("Home screen version", d.revision.toString())
-                    DiagLine("Requests answered", d.ffiCalls.toString())
-                    DiagLine("Last rebuild took", "${d.lastBuildMicros / 1000u} ms")
-                    DiagLine("Saved data", "${d.dbBytes / 1024u} KB")
-                    DiagLine("Work waiting", d.queueDepth.toString())
+                    DiagLine("Elementos indexados", d.items.toString())
+                    DiagLine("Versión de pantalla de inicio", d.revision.toString())
+                    DiagLine("Peticiones respondidas", d.ffiCalls.toString())
+                    DiagLine("Última reconstrucción", "${d.lastBuildMicros / 1000u} ms")
+                    DiagLine("Datos guardados", "${d.dbBytes / 1024u} KB")
+                    DiagLine("Tareas en cola", d.queueDepth.toString())
                 }
             }
         }
-        SheetRow(icon = LoungeIcons.Refresh, title = "Run the setup steps again", onClick = onSetupAgain, focusRequester = focusFor(Overlay.Onboarding))
+        SheetRow(icon = LoungeIcons.Refresh, title = "Ejecutar asistente de inicio de nuevo", onClick = onSetupAgain, focusRequester = focusFor(Overlay.Onboarding))
     }
-    SheetFootnote("Left and Right change a value. Back closes.")
+    SheetFootnote("Izquierda y Derecha cambian valores. Atrás cierra.")
 }
 
 /** One of Lounge's optional accesses, as Settings and the setup steps name it. */
 internal enum class Access(val key: String, val title: String, val what: String) {
-    TvListings("tv_listings", "TV listings", "Continue watching, channels and the TV guide"),
-    NowPlaying("notifications", "Now playing", "What is playing, with play and pause"),
-    Usage("usage", "Usage access", "Lets Your apps follow what you open"),
+    TvListings("tv_listings", "Programación de TV", "Continuar viendo, canales y guía de TV"),
+    NowPlaying("notifications", "Reproduciendo ahora", "Lo que suena actualmente, con reproducción y pausa"),
+    Usage("usage", "Acceso de uso", "Permite a Tus aplicaciones recordar lo que abres"),
 }
 
 private fun Access.granted(context: android.content.Context): Boolean = when (this) {
@@ -599,7 +599,7 @@ private fun Access.screen(): String? = when (this) {
     Access.Usage -> android.provider.Settings.ACTION_USAGE_ACCESS_SETTINGS
 }
 
-private const val NO_SCREEN = "This TV has no screen for this. OK opens Power Setup, which can allow it."
+private const val NO_SCREEN = "Este TV no tiene pantalla para esto. Pulsa OK para abrir Configuración Avanzada."
 
 /**
  * Lounge's accesses and how to ask for each without leaving the sheet. Once Android stops showing
@@ -632,7 +632,7 @@ internal class AccessAsker(private val context: android.content.Context, private
         val screen = a.screen()
         return when {
             isOn(a) -> a.what
-            refused[a] == true -> "Android won't ask again. OK opens Lounge's page in Android's settings."
+            refused[a] == true -> "Android no volverá a preguntar. OK abre la ficha de Lounge en Ajustes."
             screen != null && !opens(Intent(screen)) -> NO_SCREEN
             else -> a.what
         }
@@ -642,10 +642,10 @@ internal class AccessAsker(private val context: android.content.Context, private
         if (isOn(a) || leaving) return
         val screen = a.screen()
         when {
-            screen != null -> leaveFor(Intent(screen), "Find Lounge in the list and turn it on, then press Back.", a)
+            screen != null -> leaveFor(Intent(screen), "Busca Lounge en la lista, actívalo y luego pulsa Atrás.", a)
             refused[a] == true -> leaveFor(
                 Intent(android.provider.Settings.ACTION_APPLICATION_DETAILS_SETTINGS, Uri.fromParts("package", context.packageName, null)),
-                "Open Permissions and allow ${a.title}, then press Back.",
+                "Abre Permisos, activa ${a.title} y luego pulsa Atrás.",
                 a,
             )
             else -> {
@@ -664,7 +664,7 @@ internal class AccessAsker(private val context: android.content.Context, private
     /** Says [hint] and leaves it on screen a moment, then opens [intent]; Power Setup when nothing can. */
     private fun leaveFor(intent: Intent, hint: String, a: Access) {
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-        val noScreen = "This TV has no screen to allow ${a.title}. Power Setup can allow it."
+        val noScreen = "Este TV no tiene pantalla para permitir ${a.title}. Usa Configuración Avanzada."
         if (!opens(intent)) {
             say(noScreen)
             onPowerSetup()
@@ -711,7 +711,7 @@ internal fun AccessRow(access: Access, asker: AccessAsker, focusRequester: Focus
         title = access.title,
         subtitle = asker.note(access),
         subtitleLines = WHOLE,
-        value = if (on) "On" else "Not allowed",
+        value = if (on) "Activado" else "Sin permiso",
         accent = if (on) colors.signal else colors.dust,
         onClick = { asker.ask(access) },
         focusRequester = focusRequester,
@@ -762,13 +762,13 @@ fun CompanionSheet(core: CoreClient, enabled: Boolean, onSetEnabled: (Boolean) -
         }
     }
 
-    SheetHeading("Phone companion", "Your phone becomes a remote, a keyboard and the place to arrange this screen.")
+    SheetHeading("Control desde el móvil", "Tu celular se convierte en control remoto, teclado y panel para ordenar la pantalla.")
     val running = enabled && status?.running == true
     SheetRow(
         icon = LoungeIcons.Phone,
         title = "Control desde el móvil",
-        subtitle = if (enabled) null else "Turn it on to pair a phone",
-        value = if (enabled) "On" else "Off",
+        subtitle = if (enabled) null else "Actívalo para vincular un celular",
+        value = if (enabled) "Activado" else "Desactivado",
         accent = if (running) colors.signal else colors.dust,
         onClick = { onSetEnabled(!enabled) },
         focusRequester = firstFocus,
@@ -783,23 +783,23 @@ fun CompanionSheet(core: CoreClient, enabled: Boolean, onSetEnabled: (Boolean) -
         } else if (s != null && s.running && p != null) {
             Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.fillMaxWidth()) {
                 Box(Modifier.size(300.dp).clip(RoundedCornerShape(16.dp)).background(colors.limelight)) {
-                    coil3.compose.AsyncImage(model = p.qrPngPath, contentDescription = "Pairing code", modifier = Modifier.fillMaxSize())
+                    coil3.compose.AsyncImage(model = p.qrPngPath, contentDescription = "Código de vinculación", modifier = Modifier.fillMaxSize())
                 }
                 Spacer(Modifier.height(20.dp))
-                Text("Or type this code", style = LoungeTheme.typography.meta, color = colors.dust)
+                Text("O escribe este código", style = LoungeTheme.typography.meta, color = colors.dust)
                 Spacer(Modifier.height(6.dp))
                 Text(p.code.chunked(3).joinToString(" "), style = LoungeTheme.typography.displayL, color = colors.limelight)
                 Spacer(Modifier.height(10.dp))
-                Text(s.url?.let { "at $it" } ?: "", style = LoungeTheme.typography.caption, color = colors.dust)
+                Text(s.url?.let { "en $it" } ?: "", style = LoungeTheme.typography.caption, color = colors.dust)
             }
             Spacer(Modifier.height(20.dp))
             SheetRow(
                 icon = LoungeIcons.Refresh,
-                title = "New code",
+                title = "Nuevo código",
                 onClick = { scope.launch { newCode() } },
             )
         } else {
-            Text("Starting…", style = LoungeTheme.typography.meta, color = colors.dust)
+            Text("Iniciando…", style = LoungeTheme.typography.meta, color = colors.dust)
         }
         if (s != null) {
             Spacer(Modifier.height(8.dp))
@@ -807,17 +807,17 @@ fun CompanionSheet(core: CoreClient, enabled: Boolean, onSetEnabled: (Boolean) -
             // could not be saved would undo itself at the next restart, so it stays on offer.
             SheetRow(
                 icon = LoungeIcons.Phone,
-                title = if (forgetting) "Yes, forget every phone" else "Paired phones",
+                title = if (forgetting) "Sí, olvidar todos los celulares" else "Celulares vinculados",
                 titleColor = if (forgetting) colors.ember else colors.limelight,
                 subtitle = when {
-                    forgetFailed -> "Lounge couldn't save that. Try again."
-                    forgetting -> "Each phone needs a new code to pair again"
-                    forgotten && s.paired == 0u -> "Forgotten. Each phone needs a new code to pair again."
-                    s.paired > 0u -> "OK forgets every paired phone"
+                    forgetFailed -> "No se pudo guardar. Intenta de nuevo."
+                    forgetting -> "Cada celular necesitará un nuevo código para vincularse"
+                    forgotten && s.paired == 0u -> "Olvidados. Cada celular necesitará un nuevo código para vincularse."
+                    s.paired > 0u -> "Pulsa OK para olvidar todos los celulares vinculados"
                     else -> null
                 },
                 subtitleLines = WHOLE,
-                value = if (forgetting) null else if (s.paired == 0u) "None" else s.paired.toString(),
+                value = if (forgetting) null else if (s.paired == 0u) "Ninguno" else s.paired.toString(),
                 accent = if (forgetFailed) colors.ember else colors.dust,
                 modifier = Modifier.onFocusChanged { if (!it.isFocused) forgetting = false },
                 onClick = {
@@ -837,8 +837,8 @@ fun CompanionSheet(core: CoreClient, enabled: Boolean, onSetEnabled: (Boolean) -
         }
     }
     SheetFootnote(
-        "Everything stays on your home network.",
-        "Add the page to your phone's home screen to open it quickly.",
+        "Todo funciona dentro de tu red Wi-Fi local.",
+        "Agrega la página a la pantalla de inicio de tu celular para abrirla rápido.",
     )
 }
 
@@ -869,17 +869,17 @@ internal fun pairingProblem(e: Throwable): String {
 @Composable
 fun ChannelsSheet(channels: List<ChannelInfo>?, onToggle: (ChannelInfo) -> Unit, firstFocus: FocusRequester) {
     val colors = LoungeTheme.colors
-    SheetHeading("Channels from apps", "Turn on the ones you want as rows on your home screen.")
+    SheetHeading("Canales de aplicaciones", "Activa los que quieras ver como filas en tu inicio.")
     when {
-        channels == null -> Text("Loading…", style = LoungeTheme.typography.meta, color = colors.dust)
-        channels.isEmpty() -> Text("No app has published a channel yet.", style = LoungeTheme.typography.meta, color = colors.dust)
+        channels == null -> Text("Cargando…", style = LoungeTheme.typography.meta, color = colors.dust)
+        channels.isEmpty() -> Text("Ninguna app ha publicado un canal todavía.", style = LoungeTheme.typography.meta, color = colors.dust)
         else -> Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
             channels.forEachIndexed { i, ch ->
                 SheetRow(
                     icon = LoungeIcons.Guide,
                     title = ch.name,
                     subtitle = if (ch.programmes == 1u) "1 programme" else "${ch.programmes} programmes",
-                    value = if (ch.enabled) "On" else "Off",
+                    value = if (ch.enabled) "Activado" else "Desactivado",
                     accent = if (ch.enabled) colors.signal else colors.dust,
                     onClick = { onToggle(ch) },
                     focusRequester = if (i == 0) firstFocus else null,
@@ -887,7 +887,7 @@ fun ChannelsSheet(channels: List<ChannelInfo>?, onToggle: (ChannelInfo) -> Unit,
             }
         }
     }
-    SheetFootnote("Apps decide what goes in their channels; Lounge only chooses which to show.")
+    SheetFootnote("Cada app decide qué muestra en su canal; Lounge solo elige cuáles mostrar.")
     // The list can arrive after the sheet's own request for focus has given up.
     LaunchedEffect(channels != null) { if (!channels.isNullOrEmpty()) firstFocus.requestWhenReady() }
 }
@@ -901,7 +901,7 @@ private fun DiagLine(label: String, value: String) {
     }
 }
 
-internal const val HOME_NOT_TAKEN = "Android didn't make Lounge the home screen. Try one of the other ways below."
+internal const val HOME_NOT_TAKEN = "Android no puso a Lounge como inicio predeterminado. Prueba otra opción abajo."
 
 /**
  * The "make this my home screen" guide, honest about what each path needs. [takeHome] is what
@@ -924,14 +924,14 @@ fun HomeRoleSheet(
     val turnOff = takeHome.filter { it.id.startsWith("home_off_") }
     val them = if (turnOff.size == 1) "it" else "them"
     SheetHeading(
-        if (isDefaultHome) "Lounge is your home screen" else "Make Lounge your home screen",
-        if (isDefaultHome) "Pressing Home brings you here." else "Google TV has no setting for this. One of these works.",
+        if (isDefaultHome) "Lounge es tu pantalla de inicio" else "Hacer a Lounge pantalla de inicio",
+        if (isDefaultHome) "Al pulsar Inicio volverás aquí." else "Android TV no incluye un ajuste directo para esto. Usa una de estas opciones.",
     )
     if (!isDefaultHome) {
         SheetRow(
             icon = LoungeIcons.Power,
-            title = if (powerReady) "Do it now" else "Let Lounge do it",
-            value = if (powerReady) "Through Power Setup" else "Power Setup",
+            title = if (powerReady) "Hacerlo ahora" else "Dejar que Lounge lo haga",
+            value = if (powerReady) "Vía Configuración Avanzada" else "Configuración Avanzada",
             accent = colors.houselight,
             onClick = if (powerReady) onDoItNow else onPowerSetup,
             focusRequester = firstFocus,
@@ -939,7 +939,7 @@ fun HomeRoleSheet(
         if (turnOff.isNotEmpty()) {
             Spacer(Modifier.height(12.dp))
             Step(
-                if (turnOff.size == 1) "This TV's own home comes first" else "This TV's own homes come first",
+                if (turnOff.size == 1) "El inicio original del TV tiene prioridad" else "Los inicios originales del TV tienen prioridad",
                 "Android opens $them before any chosen home, so this also turns $them off. Nothing is uninstalled; " +
                     "turn $them back on in Power Setup, and do that before you uninstall Lounge.",
                 takeHome.joinToString("\n") { it.command },
@@ -948,27 +948,27 @@ fun HomeRoleSheet(
         Spacer(Modifier.height(20.dp))
         Column(verticalArrangement = Arrangement.spacedBy(20.dp)) {
             Step(
-                "Or from a computer, once",
-                "Turn on USB debugging on this TV, connect to it with adb from a computer, then run:",
+                "O desde un computador, una sola vez",
+                "Activa la depuración ADB en el TV, conéctate desde un PC y ejecuta:",
                 takeHome.joinToString("\n") { "adb shell ${it.command}" }.ifEmpty { "adb shell cmd package set-home-activity $packageName/tv.lounge.launcher.MainActivity" },
             )
             Step(
-                "Or let Android ask",
-                "Some TVs show a chooser the next time you press Home. Pick Lounge and choose Always.",
+                "O deja que Android pregunte",
+                "Algunos TVs muestran un selector al pulsar Inicio. Elige Lounge y selecciona Siempre.",
                 null,
             )
         }
         Spacer(Modifier.height(24.dp))
-        SheetRow(icon = LoungeIcons.Refresh, title = "Check again", onClick = onRecheck)
+        SheetRow(icon = LoungeIcons.Refresh, title = "Comprobar de nuevo", onClick = onRecheck)
         SheetRow(
             icon = LoungeIcons.Settings,
-            title = "Open Developer options",
+            title = "Abrir Opciones de desarrollador",
             onClick = { runCatching { context.startActivity(Intent(android.provider.Settings.ACTION_APPLICATION_DEVELOPMENT_SETTINGS).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)) } },
         )
     } else {
-        SheetRow(icon = LoungeIcons.Refresh, title = "Check again", onClick = onRecheck, focusRequester = firstFocus)
+        SheetRow(icon = LoungeIcons.Refresh, title = "Comprobar de nuevo", onClick = onRecheck, focusRequester = firstFocus)
         if (homesOff.isNotEmpty()) {
-            SheetRow(icon = LoungeIcons.Power, title = if (homesOff.size == 1) "Turn it back on" else "Turn them back on", value = "Power Setup", onClick = onPowerSetup)
+            SheetRow(icon = LoungeIcons.Power, title = if (homesOff.size == 1) "Volver a activarlo" else "Volver a activarlos", value = "Configuración Avanzada", onClick = onPowerSetup)
         }
     }
     SheetFootnote(
