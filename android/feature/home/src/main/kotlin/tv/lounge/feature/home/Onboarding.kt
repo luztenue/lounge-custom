@@ -501,7 +501,7 @@ private fun StepPhone(core: CoreClient, prefs: Prefs, uiPrefs: Prefs.UiPrefs, ch
 @Composable
 private fun StepDone() {
     val colors = LoungeTheme.colors
-    Heading("Todo listo", "Pulsa Inicio cuando quieras para volver aquí. Mantén pulsada cualquier tarjeta para ver sus opciones."
+    Heading("Todo listo", "Pulsa Inicio cuando quieras para volver aquí. Mantén pulsada cualquier tarjeta para ver sus opciones.")
     Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
         Text("Arriba desde la portada accedes a Buscar, Guía de TV y Ajustes.", style = LoungeTheme.typography.meta, color = colors.dust)
         Text("Atrás sube un nivel; desde las filas regresa a la portada.", style = LoungeTheme.typography.meta, color = colors.dust)
