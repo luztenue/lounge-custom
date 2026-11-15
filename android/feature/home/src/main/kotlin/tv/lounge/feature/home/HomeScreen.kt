@@ -225,7 +225,7 @@ fun HomeScreen(core: CoreClient, platform: AndroidPlatform, prefs: Prefs, uiPref
     fun goToStage(snap: Boolean = false) {
         state.region = FocusRegion.Stage
         state.focusedRowId = null
-        scope.launch { state.focusStrip() }
+        scope.launch { state.playbillFocus.requestWhenReady() }
         if (listState.firstVisibleItemIndex > 0 || listState.firstVisibleItemScrollOffset > 0) {
             scope.launch { if (snap) listState.scrollToItem(0) else listState.animateScrollToItem(0) }
         }
@@ -240,7 +240,7 @@ fun HomeScreen(core: CoreClient, platform: AndroidPlatform, prefs: Prefs, uiPref
                 val last = if (chipGone) state.topBar.settings else state.topBar.last
                 if (!last.requestWhenReady(6)) state.topBarFocus.requestWhenReady()
             }
-            FocusRegion.Stage -> if (!(state.playbillFocused && state.playbillFocus.requestWhenReady(6))) state.focusStrip()
+            FocusRegion.Stage -> state.playbillFocus.requestWhenReady(6)
             FocusRegion.Rows -> {
                 val rows = snapshot.rows
                 val row = rows.firstOrNull { it.id == state.focusedRowId }
@@ -470,8 +470,8 @@ fun HomeScreen(core: CoreClient, platform: AndroidPlatform, prefs: Prefs, uiPref
             }
             .focusProperties {
                 onEnter = {
-                    if (hasStrip && state.overlay == Overlay.None && state.region == FocusRegion.Stage) {
-                        runCatching { state.stripFocus().requestFocus() }
+                    if (state.overlay == Overlay.None && state.region == FocusRegion.Stage) {
+                        runCatching { state.playbillFocus.requestFocus() }
                     } else if (state.overlay == Overlay.None && state.region == FocusRegion.Rows && focusedTileGone()) {
                         // A focused tile that left its row would let focus come back in at the top
                         // bar; it goes to the tile's neighbour instead.
@@ -539,7 +539,7 @@ fun HomeScreen(core: CoreClient, platform: AndroidPlatform, prefs: Prefs, uiPref
                 showGuide = (snapshot.rows + snapshot.hiddenRows).any { it.id == "live" },
                 nowPlaying = nowPlaying,
                 focus = state.topBar,
-                downFocus = { state.stripFocus() },
+                downFocus = { state.playbillFocus },
                 onFocused = { state.region = FocusRegion.TopBar; light.clear() },
                 onSearch = { uiSounds?.open(); openOverlay(Overlay.Search) },
                 onTvControls = { uiSounds?.open(); openOverlay(Overlay.TvControls) },
@@ -615,7 +615,7 @@ fun HomeScreen(core: CoreClient, platform: AndroidPlatform, prefs: Prefs, uiPref
                             // Down from the strip enters the first row at its leftmost tile, like the
                             // system launcher, instead of whichever tile happens to sit underneath.
                             val firstRow = snapshot.rows.firstOrNull()
-                            if (e.key == Key.DirectionDown && e.type == KeyEventType.KeyDown && !state.playbillFocused && firstRow != null) {
+                            if (e.key == Key.DirectionDown && e.type == KeyEventType.KeyDown && firstRow != null) {
                                 scope.launch {
                                     // The first row has to be composed to take focus.
                                     if (listState.firstVisibleItemIndex > 0) listState.scrollToItem(0)
@@ -837,7 +837,7 @@ fun HomeScreen(core: CoreClient, platform: AndroidPlatform, prefs: Prefs, uiPref
     }
 
     LaunchedEffect(hasStrip) {
-        if (hasStrip && state.region == FocusRegion.Stage && state.overlay == Overlay.None) state.focusStrip()
+        if (hasStrip && state.region == FocusRegion.Stage && state.overlay == Overlay.None) state.playbillFocus.requestWhenReady()
     }
     // An empty home has no strip; its Start button takes focus instead.
     val emptyHome = snapshot.revision > 0uL && snapshot.stage.spotlights.isEmpty()
