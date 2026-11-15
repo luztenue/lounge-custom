@@ -138,11 +138,11 @@ private fun pluginGlyph(p: PluginInfo): ImageVector = when {
 
 private fun statusWord(p: PluginInfo): String = when {
     // A plugin waiting on the person is not a problem: a sign-in when there is a page or a code.
-    p.enabled && p.ask != null -> if (p.ask?.link != null || p.ask?.code != null) "Sign in" else "Needs setup"
+    p.enabled && p.ask != null -> if (p.ask?.link != null || p.ask?.code != null) "Iniciar sesión" else "Requiere configuración"
     p.lastError != null && p.enabled -> "Problem"
     p.enabled -> "On"
-    p.updateAsksToReach.isNotEmpty() -> "Turned off by its update"
-    !p.configured -> "Needs setup"
+    p.updateAsksToReach.isNotEmpty() -> "Desactivado tras actualizar"
+    !p.configured -> "Requiere configuración"
     else -> "Off"
 }
 
@@ -220,7 +220,7 @@ fun PluginDetailSheet(core: CoreClient, pluginId: String, onRemoved: () -> Unit,
     }
     val ask = p.ask?.takeIf { p.enabled }
     when {
-        held -> Text("Turned off by its update, which also asks to reach ${joined(p.updateAsksToReach)}.", style = LoungeTheme.typography.meta, color = colors.houselight)
+        held -> Text("Desactivado por su actualización, que pide acceso a ${joined(p.updateAsksToReach)}.", style = LoungeTheme.typography.meta, color = colors.houselight)
         ask != null -> AskCard(ask)
         else -> StatusLine(p)
     }
@@ -231,7 +231,7 @@ fun PluginDetailSheet(core: CoreClient, pluginId: String, onRemoved: () -> Unit,
             SheetRow(
                 icon = LoungeIcons.Power,
                 title = "Permitir y activar",
-                subtitle = "It can then reach ${joined(p.updateAsksToReach)} as well",
+                subtitle = "Podrá conectarse también a ${joined(p.updateAsksToReach)}",
                 subtitleLines = WHOLE,
                 accent = colors.houselight,
                 onClick = { switch(true) },
@@ -330,9 +330,9 @@ fun PluginDetailSheet(core: CoreClient, pluginId: String, onRemoved: () -> Unit,
         }
     }
     SheetFootnote(
-        "It can reach ${reachText(p)}.",
-        "It refreshes every ${Words.counted(p.refreshMinutes.toLong(), "minute", "minutes")} while the TV is on.",
-        "Updates are taken only from its publisher, whose key starts ${p.publisher.take(8).chunked(4).joinToString(" ")}.",
+        "Puede conectarse a: ${reachText(p)}.",
+        "Se actualiza cada ${Words.counted(p.refreshMinutes.toLong(), "minuto", "minutos")} con el TV encendido.",
+        "Actualizaciones verificadas del autor (clave ${p.publisher.take(8).chunked(4).joinToString(" ")}).",
     )
 }
 
@@ -349,9 +349,9 @@ private fun reachText(p: PluginInfo): String {
     for (h in p.fetchHosts) {
         parts += when {
             h.startsWith("$") -> p.settings.firstOrNull { it.key == h.drop(1) }?.let { "what you enter in ${it.label}" } ?: continue
-            h == "*" -> "any public site"
-            h == "local-network" -> "devices on your home network"
-            h == "localhost" || h == "127.0.0.1" || h == "::1" -> "this TV"
+            h == "*" -> "cualquier sitio público"
+            h == "local-network" -> "dispositivos de tu red local"
+            h == "localhost" || h == "127.0.0.1" || h == "::1" -> "este televisor"
             else -> h
         }
     }
@@ -378,12 +378,12 @@ private fun AskCard(ask: PluginAsk) {
             AsyncImage(model = path, contentDescription = null, modifier = Modifier.size(200.dp).clip(RoundedCornerShape(12.dp)))
         }
         Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-            Text(if (link != null) "Sign in on your phone" else "Sign in", style = LoungeTheme.typography.title, color = colors.houselight)
+            Text(if (link != null) "Inicia sesión en tu celular" else "Iniciar sesión", style = LoungeTheme.typography.title, color = colors.houselight)
             // With a page to open, the code follows it; without one, the plugin says where the code goes.
             val where = when {
                 link == null -> ask.after
-                ask.linkText != null -> "Scan this with its camera, or open ${ask.linkText}" + if (ask.code != null) " and enter" else ""
-                else -> "Scan this with its camera, or tap the link in the phone companion" + if (ask.code != null) " and enter" else ""
+                ask.linkText != null -> "Escanea con tu cámara o abre ${ask.linkText}" + if (ask.code != null) " e ingresa:" else ""
+                else -> "Escanea con tu cámara o abre el enlace en Control desde el móvil" + if (ask.code != null) " e ingresa:" else ""
             }
             where?.let { Text(it, style = LoungeTheme.typography.meta, color = colors.dust) }
             ask.code?.let { Text(it, style = LoungeTheme.typography.displayL, color = colors.limelight, maxLines = 1) }
@@ -398,8 +398,8 @@ private fun StatusLine(p: PluginInfo) {
     val (text, color) = when {
         p.enabled && p.lastError != null -> p.lastError!! to colors.ember
         p.enabled && p.lastRefreshMs != null -> "${if (p.items == 1u) "1 item" else "${p.items} items"}, refreshed ${Words.ago(System.currentTimeMillis() - p.lastRefreshMs!!)}" to colors.signal
-        p.enabled -> "Fetching for the first time…" to colors.dust
-        !p.configured -> "Fill in the settings below, then turn it on." to colors.houselight
+        p.enabled -> "Descargando por primera vez…" to colors.dust
+        !p.configured -> "Completa los ajustes abajo y luego actívalo." to colors.houselight
         // Off and ready: the switch row below says so.
         else -> return
     }
@@ -513,14 +513,14 @@ private fun SettingField(setting: PluginSettingInfo, focusRequester: FocusReques
     val placeholder = when {
         secret && setting.hasValue -> "•••••••• (saved)"
         setting.defaultValue != null -> setting.defaultValue!!
-        else -> "Not set"
+        else -> "Sin configurar"
     }
     // What TalkBack says after the label while the field is empty.
     val state = when {
         field.text.isNotEmpty() -> null
         secret && setting.hasValue -> "Saved"
-        setting.defaultValue != null -> "Not set, uses ${setting.defaultValue}"
-        else -> "Not set"
+        setting.defaultValue != null -> "Sin configurar (usa ${setting.defaultValue})"
+        else -> "Sin configurar"
     }
     Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
         Text(label, style = LoungeTheme.typography.caption, color = colors.dust)

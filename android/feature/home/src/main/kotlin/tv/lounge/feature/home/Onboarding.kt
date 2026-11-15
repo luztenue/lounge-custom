@@ -89,7 +89,7 @@ import tv.lounge.power.PrivilegedException
 
 private const val STEPS = 5
 
-internal const val HOME_NOT_TAKEN_SETUP = "Android didn't make Lounge the home screen. Try again, or in Settings open Default home screen for other ways."
+internal const val HOME_NOT_TAKEN_SETUP = "Android no estableció Lounge como inicio. Intenta de nuevo o entra a Ajustes > Pantalla de inicio predeterminada."
 
 /**
  * Setup: five full-screen steps, one question each, with a row of dots for progress (DESIGN.md
@@ -250,7 +250,7 @@ private fun ChoiceDot(selected: Boolean) {
 @Composable
 private fun StepLook(prefs: Prefs, uiPrefs: Prefs.UiPrefs, choiceFocus: FocusRequester, onPreview: (Prefs.Theme) -> Unit) {
     val scope = rememberCoroutineScope()
-    Heading("Welcome to Lounge", "Your TV, laid out around what you actually watch. First, how should it look? You can change this any time.")
+    Heading("Bienvenido a Lounge", "Tu televisor organizado alrededor de lo que realmente ves. Primero, elige cómo quieres que luzca.")
     // The rooms two to a row, so the grid and the live preview share the screen.
     Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
         Prefs.Theme.entries.chunked(2).forEach { pair ->
@@ -274,7 +274,7 @@ private fun StepLook(prefs: Prefs, uiPrefs: Prefs.UiPrefs, choiceFocus: FocusReq
     if (rememberControllerConnected()) {
         Spacer(Modifier.height(18.dp))
         Text(
-            "On a controller, A chooses, B goes back, Y opens a tile's options, Start searches and Select opens Settings.",
+            "En un mando: A elige, B vuelve, Y abre opciones, Start busca y Select abre Ajustes.",
             style = LoungeTheme.typography.caption,
             color = LoungeTheme.colors.dust,
         )
@@ -341,13 +341,13 @@ private fun StepAccess(core: CoreClient, choiceFocus: FocusRequester, say: (Stri
         say = say,
         onPowerSetup = onPowerSetup,
     )
-    Heading("What may Lounge see?", "Each one adds a part of the home screen. Nothing leaves this TV; say no to any of them.")
+    Heading("¿Qué puede ver Lounge?", "Cada permiso añade una función al inicio. Nada sale de este televisor.")
     val first = Access.entries.firstOrNull { !access.isOn(it) }
     Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
         Access.entries.forEach { a -> AccessRow(a, access, focusRequester = if (a == first) choiceFocus else null) }
     }
     Spacer(Modifier.height(20.dp))
-    Text("Power Setup, the next step, can allow any of these as well.", style = LoungeTheme.typography.caption, color = colors.dust)
+    Text("Configuración Avanzada (siguiente paso) también puede conceder estos permisos.", style = LoungeTheme.typography.caption, color = colors.dust)
 }
 
 @Composable
@@ -378,26 +378,26 @@ private fun StepPower(power: PowerSetup, context: Context, choiceFocus: FocusReq
     }
 
     Heading(
-        "Make it your home screen",
+        "Hacerlo tu pantalla de inicio",
         if (isHome) "Done: pressing Home brings Lounge up. Power Setup can also allow the accesses from the last step, and turn the TV on and switch its input."
-        else "Google TV has no setting for this. Power Setup can do it through the TV's USB debugging, and the TV asks you once: tick “Always allow”, then choose Allow.",
+        else "Android TV no tiene ajuste directo para esto. Configuración Avanzada lo hace por ADB; marca “Permitir siempre” y pulsa Permitir.",
     )
     Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
         SheetRow(
             icon = LoungeIcons.Power,
             title = when (status) {
                 is PowerStatus.Ready -> "Connected"
-                PowerStatus.WaitingForApproval -> "Waiting for you to allow it…"
-                is PowerStatus.Unavailable -> "Turn on USB debugging first"
-                else -> "Connect Power Setup"
+                PowerStatus.WaitingForApproval -> "Esperando tu confirmación…"
+                is PowerStatus.Unavailable -> "Activa primero la depuración ADB"
+                else -> "Conectar Configuración Avanzada"
             },
             subtitle = (status as? PowerStatus.Failed)?.reason,
             subtitleLines = WHOLE,
             value = when (status) {
-                is PowerStatus.Ready -> "USB debugging"
-                PowerStatus.WaitingForApproval -> "Look at the prompt"
-                is PowerStatus.Unavailable -> "Open Developer options"
-                else -> if (pairing) "Connecting…" else "The TV asks you once"
+                is PowerStatus.Ready -> "Depuración ADB"
+                PowerStatus.WaitingForApproval -> "Mira el aviso en TV"
+                is PowerStatus.Unavailable -> "Abrir Opciones de desarrollador"
+                else -> if (pairing) "Conectando…" else "El TV pregunta una vez"
             },
             accent = if (ready) colors.signal else colors.houselight,
             onClick = {
@@ -423,8 +423,8 @@ private fun StepPower(power: PowerSetup, context: Context, choiceFocus: FocusReq
                 isHome -> "Done"
                 working -> "Working…"
                 homeFailed != null -> "Didn't work"
-                ready -> "Do it"
-                else -> "Connect first"
+                ready -> "Aplicar"
+                else -> "Conecta primero"
             },
             accent = when {
                 isHome -> colors.signal
@@ -476,8 +476,8 @@ private fun StepPhone(core: CoreClient, prefs: Prefs, uiPrefs: Prefs.UiPrefs, ch
     val scope = rememberCoroutineScope()
     val on = uiPrefs.companionEnabled
     Heading(
-        "Add your phone",
-        (if (on) "Scan the code with your phone's camera." else "Turn on the phone companion to show a code for your phone to scan.") +
+        "Agrega tu celular",
+        (if (on) "Escanea el código QR con la cámara de tu celular." else "Activa Control desde el móvil para mostrar el código QR.") +
             " Your phone becomes a remote and a keyboard, and the place to arrange rows and install plugins.",
     )
     SheetRow(
@@ -495,13 +495,13 @@ private fun StepPhone(core: CoreClient, prefs: Prefs, uiPrefs: Prefs.UiPrefs, ch
         focusRequester = if (!on) choiceFocus else null,
     )
     Spacer(Modifier.height(20.dp))
-    Text("Everything stays on your home network. To forget a phone later, in Settings open Phone companion.", style = LoungeTheme.typography.caption, color = colors.dust)
+    Text("Todo funciona en tu red local. Para desvincular un celular ve a Ajustes > Control desde el móvil.", style = LoungeTheme.typography.caption, color = colors.dust)
 }
 
 @Composable
 private fun StepDone() {
     val colors = LoungeTheme.colors
-    Heading("That's the house", "Press Home any time to come back to the Stage. Long-press a tile for its menu, Settings has the essentials, and the rest is on your phone.")
+    Heading("Todo listo", "Pulsa Inicio cuando quieras para volver aquí. Mantén pulsada cualquier tarjeta para ver sus opciones."
     Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
         Text("Arriba desde la portada accedes a Buscar, Guía de TV y Ajustes.", style = LoungeTheme.typography.meta, color = colors.dust)
         Text("Atrás sube un nivel; desde las filas regresa a la portada.", style = LoungeTheme.typography.meta, color = colors.dust)

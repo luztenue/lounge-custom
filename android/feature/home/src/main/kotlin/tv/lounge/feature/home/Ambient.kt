@@ -377,10 +377,10 @@ internal fun screensaverName(power: PowerSetup, context: android.content.Context
     val current = power.currentScreensaver
     return when {
         enabled == 0 -> "Off"
-        current == null -> "The TV's own"
+        current == null -> "El del televisor"
         current.contains(context.packageName) -> "Lounge"
         // A label that is only a package name says nothing to a person.
-        else -> power.labelFor(current).takeUnless { it.contains('.') && ' ' !in it } ?: "The TV's own"
+        else -> power.labelFor(current).takeUnless { it.contains('.') && ' ' !in it } ?: "El del televisor"
     }
 }
 
@@ -396,7 +396,7 @@ fun AmbientSheet(power: PowerSetup, prefs: Prefs, core: CoreClient, onPowerSetup
     val scope = rememberCoroutineScope()
     val styles by produceState(emptyList<ShaderStyle>()) { value = withContext(Dispatchers.IO) { ShaderStyles.all(context, core) } }
     val chosen by prefs.ambientStyle.collectAsState(initial = ShaderStyles.PICTURES)
-    val choices = listOf(Triple(ShaderStyles.PICTURES, "Pictures", "Artwork from your home screen")) +
+    val choices = listOf(Triple(ShaderStyles.PICTURES, "Imágenes", "Portadas de tu pantalla de inicio")) +
         styles.map { Triple(it.id, it.name, it.description ?: it.origin) }
     val at = choices.indexOfFirst { it.first == chosen }.coerceAtLeast(0)
     fun step(by: Int) {
@@ -455,15 +455,15 @@ fun AmbientSheet(power: PowerSetup, prefs: Prefs, core: CoreClient, onPowerSetup
             }
             !ours && status is PowerStatus.Unavailable -> runCatching {
                 context.startActivity(Intent(android.provider.Settings.ACTION_DREAM_SETTINGS).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK))
-            }.onFailure { error = "This TV has no screensaver settings of its own. Power Setup can switch it instead." }
+            }.onFailure { error = "Este TV no tiene ajustes de salvapantallas propios. Configuración Avanzada puede cambiarlo." }
             else -> onPowerSetup()
         }
     }
 
     SheetHeading(
         "Screensaver",
-        if (ours) "Your artwork or a slow abstract scene, with a clock; it drifts and dims to be kind to OLED panels."
-        else "Show your artwork or a slow abstract scene with a clock when the TV idles.",
+        if (ours) "Tus portadas o una escena abstracta lenta con reloj; se atenúa para cuidar paneles OLED."
+        else "Muestra tus portadas o una escena abstracta con reloj cuando el TV queda inactivo.",
     )
     Column(verticalArrangement = androidx.compose.foundation.layout.Arrangement.spacedBy(8.dp)) {
         SheetRow(
@@ -471,11 +471,11 @@ fun AmbientSheet(power: PowerSetup, prefs: Prefs, core: CoreClient, onPowerSetup
             title = "Salvapantallas",
             subtitle = when {
                 busy -> "Switching…"
-                ours && ready -> "OK puts back the one before"
-                ours -> "Power Setup can put back the one before"
-                ready -> "OK makes Lounge's the screensaver"
-                status is PowerStatus.Unavailable -> "OK opens the TV's screensaver settings: choose Lounge there, then press Back"
-                else -> "OK opens Power Setup, which can make Lounge's the screensaver"
+                ours && ready -> "OK restaura el salvapantallas anterior"
+                ours -> "Configuración Avanzada puede restaurar el anterior"
+                ready -> "OK activa el salvapantallas de Lounge"
+                status is PowerStatus.Unavailable -> "OK abre ajustes del TV: elige Lounge ahí y luego pulsa Atrás"
+                else -> "OK abre Configuración Avanzada para activar este salvapantallas"
             },
             subtitleLines = WHOLE,
             value = name,
@@ -495,9 +495,9 @@ fun AmbientSheet(power: PowerSetup, prefs: Prefs, core: CoreClient, onPowerSetup
         if (error != null) Text(error!!, style = LoungeTheme.typography.caption, color = colors.ember)
     }
     SheetFootnote(
-        "Pictures come from what is already on your home screen and abstract scenes are drawn on the TV; nothing is downloaded for this.",
-        "The TV decides when the screensaver starts. To change when, in the TV's settings open System, then Screensaver.",
+        "Las imágenes salen de tu pantalla de inicio y los fondos se dibujan localmente; no descarga datos.",
+        "El televisor decide cuándo inicia. Para cambiar el tiempo ve a Ajustes del TV > Sistema > Salvapantallas.",
     )
 }
 
-private const val NOT_TAKEN = "The TV didn't take the change. Try again, or in the TV's settings open System, then Screensaver."
+private const val NOT_TAKEN = "El TV no guardó el cambio. Inténtalo de nuevo o cámbialo en Sistema > Salvapantallas."

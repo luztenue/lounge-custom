@@ -96,7 +96,13 @@ pub(crate) fn effective_row_order(state: &State) -> Vec<String> {
     }
     order.retain(|id| extra.contains(id));
     let missing: Vec<String> = extra.into_iter().filter(|id| !order.contains(id)).collect();
-    order.extend(missing);
+    for id in missing {
+        if id == "plugin:tv.lounge.youtube:new" {
+            order.insert(0, id);
+        } else {
+            order.push(id);
+        }
+    }
     order
 }
 
@@ -367,8 +373,8 @@ fn build_row(state: &State, index: &BuildIndex, row_id: &str, now: i64, config: 
                     None
                 };
             }
-            // The Stage strip already shows the first of them, so the row starts after it.
-            let rest = items.into_iter().filter(|it| !index.on_stage(&it.id)).take(ROW_TILES).collect();
+            // Show all Continue watching items starting from #1 since the Stage strip was removed.
+            let rest = items.into_iter().take(ROW_TILES).collect();
             ("Continuar viendo", TileKind::Landscape, RowSize::M, None, rest)
         }
         "apps" => {

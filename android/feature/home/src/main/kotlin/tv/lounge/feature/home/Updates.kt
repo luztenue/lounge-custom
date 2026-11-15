@@ -41,7 +41,7 @@ fun updateStatusWord(state: UpdateState, auto: Boolean): String = when (state) {
 private fun ago(ms: Long): String = if (ms <= 0) "never" else Words.ago(System.currentTimeMillis() - ms)
 
 /** What OK on a row that opens Android's list of apps allowed to install says first. */
-private const val INSTALL_HINT = "OK opens Android's list: turn on Lounge there, then press Back"
+private const val INSTALL_HINT = "OK abre la lista de Android: activa Lounge allí y pulsa Atrás"
 
 /** Updates, from Settings: where Lounge stands against its releases and what, if anything, needs a press. */
 @Composable
@@ -59,7 +59,7 @@ fun UpdatesSheet(updates: UpdateManager, firstFocus: FocusRequester) {
         SheetRow(
             icon = LoungeIcons.Info,
             title = "Lounge ${updates.currentVersion}",
-            value = if (state is UpdateState.Idle) "Not checked yet" else updateStatusWord(state, auto),
+            value = if (state is UpdateState.Idle) "Sin comprobar aún" else updateStatusWord(state, auto),
             accent = when (state) {
                 is UpdateState.UpToDate -> colors.signal
                 is UpdateState.Failed -> colors.ember
@@ -67,7 +67,7 @@ fun UpdatesSheet(updates: UpdateManager, firstFocus: FocusRequester) {
             },
             subtitle = when (val s = state) {
                 is UpdateState.UpToDate -> "Checked ${ago(s.checkedAtMs)}"
-                is UpdateState.Idle -> "Press to check now"
+                is UpdateState.Idle -> "Pulsa para comprobar ahora"
                 is UpdateState.Failed -> s.message
                 else -> null
             },
@@ -115,12 +115,12 @@ fun UpdatesSheet(updates: UpdateManager, firstFocus: FocusRequester) {
         Spacer(Modifier.height(8.dp))
         val path = updates.currentPath()
         val how = when (path) {
-            InstallPath.Silent -> "Updates install by themselves while you are in another app, and Lounge comes back as it was."
-            InstallPath.PowerSetup -> "Power Setup installs updates without asking, while you are in another app."
-            InstallPath.Confirm -> "Android asks you to confirm this update, and Play Protect may add that it has not seen this developer: choose More details, then Install anyway. After this one, updates install by themselves."
-            InstallPath.NeedsPermission -> "Android doesn't let Lounge install apps yet. To allow it, in the TV's settings open Apps, then Special app access, then Install unknown apps; or connect Power Setup."
+            InstallPath.Silent -> "Las actualizaciones se instalan automáticamente mientras usas otra app."
+            InstallPath.PowerSetup -> "Configuración Avanzada instala actualizaciones en segundo plano sin preguntar."
+            InstallPath.Confirm -> "Android te pedirá confirmar la actualización; elige Más detalles > Instalar de todas formas."
+            InstallPath.NeedsPermission -> "Android aún no permite a Lounge instalar apps. Actívalo en Ajustes > Apps > Acceso especial > Instalar apps desconocidas."
         }
-        Text("Lounge looks at its releases on GitHub twice a day. $how", style = LoungeTheme.typography.caption, color = colors.dust, modifier = Modifier.padding(horizontal = 16.dp))
+        Text("Lounge busca versiones en GitHub dos veces al día. $how", style = LoungeTheme.typography.caption, color = colors.dust, modifier = Modifier.padding(horizontal = 16.dp))
         if (path == InstallPath.NeedsPermission) {
             Spacer(Modifier.height(8.dp))
             SheetRow(icon = LoungeIcons.Settings, title = "Permitir a Lounge instalar actualizaciones", subtitle = INSTALL_HINT, onClick = { activity?.let { updates.askForInstallPermission(it, scope) } })

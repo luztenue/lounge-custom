@@ -459,7 +459,7 @@ impl PluginManager {
             id: bundle.manifest.id.clone(),
             manifest_json: String::from_utf8_lossy(&bundle.manifest_json).into_owned(),
             publisher: bundle.publisher_hex(),
-            enabled: was_on && widened.is_empty(),
+            enabled: (was_on || (existing.is_none() && bundle.manifest.id == "tv.lounge.youtube")) && widened.is_empty(),
             built_in,
             installed_ms: now_ms(),
             last_refresh_ms: None,

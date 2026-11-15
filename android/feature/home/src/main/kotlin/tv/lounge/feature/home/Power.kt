@@ -53,8 +53,8 @@ private sealed interface RunState {
 }
 
 /** What staying on means, said before anyone turns USB debugging on for Power Setup. */
-internal const val DEBUGGING_STAYS_ON = "USB debugging stays on afterwards. Other devices on your home network can then ask to connect, " +
-    "and the TV asks you before any can. TV controls and the phone's keys over other apps need it, and turning it off stops them. Updates still come, though the TV may ask you to confirm one."
+internal const val DEBUGGING_STAYS_ON = "La depuración USB queda activa después. Otros dispositivos de tu red podrán pedir conexión, " +
+    "y el TV te pedirá permiso primero. Los controles de TV y teclas desde el móvil la necesitan."
 
 /** How to turn USB debugging on, step by step, for Power Setup and the setup steps. */
 @Composable
@@ -134,11 +134,11 @@ fun PowerSetupSheet(power: PowerSetup, onHomeRoleChanged: () -> Unit, say: (Stri
 
     val ready = status is PowerStatus.Ready
     SheetHeading(
-        "Power Setup",
+        "Configuración Avanzada",
         when (val s = status) {
-            is PowerStatus.Ready -> if (s.backend == "shizuku") "Connected through Shizuku." else "Connected to this TV's USB debugging."
-            PowerStatus.WaitingForApproval -> "Allow it on the prompt the TV is showing. Tick “Always allow” so you only do this once."
-            PowerStatus.NotPaired -> "Lets Lounge do the few things an app can't: become the home screen, allow its own accesses, and turn the TV on and switch its input."
+            is PowerStatus.Ready -> if (s.backend == "shizuku") "Conectado mediante Shizuku." else "Conectado a la depuración ADB de este TV."
+            PowerStatus.WaitingForApproval -> "Acepta el aviso en pantalla y marca “Permitir siempre” para hacerlo solo una vez."
+            PowerStatus.NotPaired -> "Permite a Lounge hacerse pantalla de inicio, otorgarse permisos y controlar entradas/energía del TV."
             is PowerStatus.Unavailable -> s.reason
             is PowerStatus.Failed -> s.reason
         },
@@ -151,15 +151,15 @@ fun PowerSetupSheet(power: PowerSetup, onHomeRoleChanged: () -> Unit, say: (Stri
             icon = if (unavailable) LoungeIcons.Settings else LoungeIcons.Power,
             title = when (s) {
                 is PowerStatus.Ready -> "Connected"
-                PowerStatus.WaitingForApproval -> "Waiting for you to allow it…"
-                is PowerStatus.Unavailable -> "Open Developer options"
+                PowerStatus.WaitingForApproval -> "Esperando tu confirmación…"
+                is PowerStatus.Unavailable -> "Abrir Opciones de desarrollador"
                 else -> "Connect"
             },
             value = when (s) {
-                is PowerStatus.Ready -> if (s.backend == "shizuku") "Shizuku" else "USB debugging"
-                PowerStatus.WaitingForApproval -> fingerprint?.let { "Key ${it.take(11)}…" } ?: "Look at the prompt"
-                is PowerStatus.Unavailable -> "Turn on USB debugging"
-                else -> if (pairing) "Connecting…" else "The TV asks you once"
+                is PowerStatus.Ready -> if (s.backend == "shizuku") "Shizuku" else "Depuración ADB"
+                PowerStatus.WaitingForApproval -> fingerprint?.let { "Clave ${it.take(11)}…" } ?: "Mira el aviso en TV"
+                is PowerStatus.Unavailable -> "Activa la depuración ADB"
+                else -> if (pairing) "Conectando…" else "El TV te preguntará una vez"
             },
             accent = when (s) {
                 is PowerStatus.Ready -> colors.signal
@@ -217,15 +217,15 @@ fun PowerSetupSheet(power: PowerSetup, onHomeRoleChanged: () -> Unit, say: (Stri
                 } else {
                     forgetting = false
                     power.forget()
-                    say("Connection forgotten")
+                    say("Conexión olvidada")
                     scope.launch { firstFocus.requestWhenReady() }
                 }
             },
         )
     }
     SheetFootnote(
-        "Nothing runs until you press it, and every command is shown first.",
-        fingerprint?.let { "The key stays on this TV: $it" } ?: "The key stays on this TV.",
+        "Nada se ejecuta hasta que lo pulses, y cada comando se muestra antes.",
+        fingerprint?.let { "La clave queda guardada en este TV: $it" } ?: "La clave queda guardada en este TV.",
     )
 }
 
@@ -241,7 +241,7 @@ private fun ActionRow(action: PowerAction, state: RunState?, enabled: Boolean, o
                 is RunState.Done -> "Done"
                 is RunState.Failed -> "Failed"
                 is RunState.DidntTake -> "Didn't take"
-                null -> if (enabled) "Run" else "Connect first"
+                null -> if (enabled) "Ejecutar" else "Conecta primero"
             },
             accent = when (state) {
                 is RunState.Done -> colors.signal
@@ -273,15 +273,15 @@ private fun ActionRow(action: PowerAction, state: RunState?, enabled: Boolean, o
 
 /** What to do about [action] when it ran without an error and changed nothing; [homesFirst] when a home to turn off is listed below. */
 private fun notTaken(action: PowerAction, power: PowerSetup, homesFirst: Boolean): String = when {
-    action.id != power.homeRole.id -> "The TV ran this, but nothing changed. Try again."
-    homesFirst -> "The TV still opens its own home first. Turn it off below."
+    action.id != power.homeRole.id -> "El TV ejecutó la acción, pero nada cambió. Intenta de nuevo."
+    homesFirst -> "El TV sigue abriendo su inicio original primero. Desactívalo abajo."
     else -> HOME_NOT_TAKEN_SETUP
 }
 
 /** A TV control that did not work, as a sentence with what to try. */
 private fun controlFailure(action: PowerAction, power: PowerSetup): String = when (action) {
-    power.everythingOff -> "It didn't go to sleep. Try again."
-    else -> "The TV didn't answer. Check that HDMI-CEC is on in the TV's settings, then try again."
+    power.everythingOff -> "No entró en reposo. Intenta de nuevo."
+    else -> "El TV no respondió. Verifica que HDMI-CEC esté activo en Ajustes del TV e intenta de nuevo."
 }
 
 /**
@@ -342,7 +342,7 @@ fun TvControlsSheet(power: PowerSetup, deviceName: String, onKey: (String) -> Un
             title = if (ready) "Encender TV y cambiar a esta entrada" else "Configurar encendido y entradas",
             subtitle = if (ready) reasonFor(power.oneTouchPlay) else null,
             subtitleLines = WHOLE,
-            value = if (ready) valueFor(power.oneTouchPlay, tv?.let { if (it.isOn) "TV is on" else "TV is off" }) else if (status is PowerStatus.Unavailable) "Needs USB debugging" else "Power Setup",
+            value = if (ready) valueFor(power.oneTouchPlay, tv?.let { if (it.isOn) "TV encendido" else "TV apagado" }) else if (status is PowerStatus.Unavailable) "Needs USB debugging" else "Configuración Avanzada",
             accent = if (ready) accentFor(power.oneTouchPlay) else colors.houselight,
             onClick = { if (ready) run(power.oneTouchPlay) else onPowerSetup() },
             focusRequester = firstFocus,
@@ -371,5 +371,5 @@ fun TvControlsSheet(power: PowerSetup, deviceName: String, onKey: (String) -> Un
         SheetRow(icon = LoungeIcons.Mute, title = "Silenciar", onClick = { onKey("mute") })
         SheetRow(icon = LoungeIcons.Play, title = "Reproducir o pausar", onClick = { onKey("play_pause") })
     }
-    SheetFootnote(if (ready) "Lounge asks the TV through its HDMI cable; the TV decides what it does." else "Volume reaches the TV or soundbar the way the remote's own buttons do.")
+    SheetFootnote(if (ready) "Lounge envía la orden al TV por HDMI-CEC; el televisor decide qué hacer." else "El volumen llega al TV o barra igual que con los botones del control.")
 }

@@ -1,15 +1,15 @@
 [
-  { "id": "ink", "name": "Ink", "description": "Light moving through ink in water", "file": "ink.agsl" },
-  { "id": "current", "name": "Current", "description": "Slow water folding over itself under one light", "file": "current.agsl" },
-  { "id": "rain", "name": "Rain", "description": "A window at night, drops running down the glass", "file": "rain.agsl", "fine": true },
-  { "id": "smoke", "name": "Smoke", "description": "Wisps rising and thinning as they climb", "file": "smoke.agsl" },
-  { "id": "embers", "name": "Embers", "description": "Sparks lifting off a fire that has burned down", "file": "embers.agsl", "fine": true },
-  { "id": "shallows", "name": "Shallows", "description": "Light on the floor of a pool", "file": "shallows.agsl" },
-  { "id": "lava", "name": "Lava", "description": "A lava lamp, slowly", "file": "lava.agsl" },
-  { "id": "aurora", "name": "Aurora", "description": "Northern lights over the hills", "file": "aurora.agsl" },
-  { "id": "silk", "name": "Silk", "description": "Folds of satin turning under the lamp", "file": "silk.agsl" },
-  { "id": "curtain", "name": "Curtain", "description": "The house curtain before the show, lit from the footlights", "file": "curtain.agsl" },
-  { "id": "moonpath", "name": "Moonpath", "description": "The sea at night, and the road the moon lays across it", "file": "moonpath.agsl" },
-  { "id": "city", "name": "City", "description": "The city at night, out of focus beyond the glass", "file": "city.agsl" },
-  { "id": "record", "name": "Record", "description": "A record turning under the lamp", "file": "record.agsl" }
+  { "id": "ink", "name": "Tinta", "description": "Luz moviéndose en tinta sobre agua", "file": "ink.agsl" },
+  { "id": "current", "name": "Corriente", "description": "Agua lenta doblándose bajo una luz", "file": "current.agsl" },
+  { "id": "rain", "name": "Lluvia", "description": "Ventana nocturna con gotas cayendo", "file": "rain.agsl", "fine": true },
+  { "id": "smoke", "name": "Humo", "description": "Estelas subiendo y disipándose", "file": "smoke.agsl" },
+  { "id": "embers", "name": "Brasas", "description": "Chispas elevándose de una hoguera", "file": "embers.agsl", "fine": true },
+  { "id": "shallows", "name": "Piscina", "description": "Reflejos de luz en el fondo del agua", "file": "shallows.agsl" },
+  { "id": "lava", "name": "Lava", "description": "Lámpara de lava en movimiento lento", "file": "lava.agsl" },
+  { "id": "aurora", "name": "Aurora", "description": "Luces boreales sobre las colinas", "file": "aurora.agsl" },
+  { "id": "silk", "name": "Seda", "description": "Pliegues de satén girando bajo la luz", "file": "silk.agsl" },
+  { "id": "curtain", "name": "Telón", "description": "Telón de teatro iluminado desde abajo", "file": "curtain.agsl" },
+  { "id": "moonpath", "name": "Sendero lunar", "description": "El mar de noche bajo el reflejo de la luna", "file": "moonpath.agsl" },
+  { "id": "city", "name": "Ciudad", "description": "Luces de la ciudad desenfocadas tras el cristal", "file": "city.agsl" },
+  { "id": "record", "name": "Vinilo", "description": "Un disco girando bajo la lámpara", "file": "record.agsl" }
 ]

@@ -108,8 +108,8 @@ import tv.lounge.design.lightGlow
 private const val TEXT_OUT = 0.4f
 private const val TEXT_IN_DELAY = 0.35f
 
-/** Expanded Stage height: compact panoramic layout using Dimens.stageArtworkHeight + strip. */
-val StageExpandedHeight = Dimens.stageArtworkHeight + 12.dp + Dimens.stripTileHeight + 12.dp
+/** Expanded Stage height: compact panoramic layout without strip. */
+val StageExpandedHeight = Dimens.stageArtworkHeight + 12.dp
 val StageCollapsedHeight = Dimens.collapsedStageHeight + 16.dp
 
 /**
@@ -454,8 +454,8 @@ private fun ExpandedStage(
     shown: () -> Float,
     canTakeFocus: () -> Boolean,
 ) {
-    // An empty home has no strip to go down to.
-    val hasStrip = stage.strip.isNotEmpty()
+    // Strip removed to avoid redundant Continue watching row and recover maximum vertical space.
+    val hasStrip = false
     Column(modifier) {
         Row(Modifier.fillMaxWidth().padding(horizontal = Dimens.safeX).height(Dimens.stageArtworkHeight)) {
             Box(
@@ -463,12 +463,9 @@ private fun ExpandedStage(
                     .width(Dimens.playbillWidth)
                     .fillMaxSize()
                     .onFocusChanged { onPlaybillFocusChanged(it.hasFocus) }
-                    // Once for the group itself, once for the buttons inside it: either way Down
-                    // reaches the strip's selected tile, which overlaps this box's light room. The
-                    // second also keeps the lowered playbill's buttons out of focus.
-                    .focusProperties { if (hasStrip) down = stripFocus(); up = upFocus }
+                    .focusProperties { up = upFocus }
                     .focusGroup()
-                    .focusProperties { if (hasStrip) down = stripFocus(); up = upFocus; if (!canTakeFocus()) canFocus = false },
+                    .focusProperties { up = upFocus; if (!canTakeFocus()) canFocus = false },
             ) {
                 if (spotlight != null) {
                     Playbill(spotlight, onPrimary, onSecondary, interactive, playbillFocus, shown)
@@ -486,19 +483,6 @@ private fun ExpandedStage(
                 else -> Unit
             }
         }
-        Spacer(Modifier.height(12.dp))
-        StageStrip(
-            strip = stage.strip,
-            spotlights = stage.spotlights,
-            selected = selected,
-            upFocus = if (spotlight != null) playbillFocus else upFocus,
-            canTakeFocus = canTakeFocus,
-            stripRequester = stripRequester,
-            onStripFocused = onStripFocused,
-            onStripClick = onStripClick,
-            onStripLongPress = onStripLongPress,
-            onStripMoved = onStripMoved,
-        )
     }
 }
 
@@ -739,17 +723,6 @@ private fun Playbill(
                     }
                 },
         )
-        // The source chip sits level with the artwork's top edge: it says where OK will take you.
-        PlaybillPart(spotlight) { s ->
-            s.source?.let { source ->
-                Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                    s.sourceIconPath?.let { icon ->
-                        AsyncImage(model = icon, contentDescription = null, contentScale = ContentScale.Fit, modifier = Modifier.size(40.dp).clip(RoundedCornerShape(10.dp)))
-                    }
-                    Text(source, style = LoungeTheme.typography.meta, color = colors.dust, maxLines = 1, overflow = TextOverflow.Ellipsis)
-                }
-            }
-        }
         // Every slot has a fixed height, so a one-line title or a missing line moves nothing else.
         val type = LoungeTheme.typography
         val density = LocalDensity.current
@@ -765,8 +738,16 @@ private fun Playbill(
         Column(Modifier.fillMaxSize().padding(bottom = 2.dp), verticalArrangement = Arrangement.Bottom) {
             PlaybillPart(spotlight) { s ->
                 Column {
-                    Box(Modifier.height(metaLine)) {
-                        Text(s.category, style = type.meta, color = colors.dust, maxLines = 1)
+                    Row(
+                        Modifier.height(maxOf(metaLine, 28.dp)),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(10.dp),
+                    ) {
+                        s.sourceIconPath?.let { icon ->
+                            AsyncImage(model = icon, contentDescription = null, contentScale = ContentScale.Fit, modifier = Modifier.size(26.dp).clip(RoundedCornerShape(6.dp)))
+                        }
+                        val headerText = listOfNotNull(s.source, s.category.takeIf { it.isNotBlank() }).joinToString(" · ")
+                        Text(headerText, style = type.meta, color = colors.dust, maxLines = 1, overflow = TextOverflow.Ellipsis)
                     }
                     Spacer(Modifier.height(4.dp))
                     Box(Modifier.height(titleBlock), contentAlignment = Alignment.BottomStart) {
