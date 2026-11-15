@@ -89,12 +89,10 @@ impl sdk::Plugin for YouTube {
     }
 
     fn refresh(ctx: &RefreshContext) -> Result<Vec<Item>, String> {
-        let default_channels = "https://www.youtube.com/@NateGentile7\nhttps://www.youtube.com/@DotCSV\nhttps://www.youtube.com/@VeritasiumES\nhttps://www.youtube.com/@MKBHD";
         let mut budget = Budget::new(FETCH_BUDGET);
         let account = Account::connect(ctx.now_ms, &mut budget)?;
         let sources = match host::setting("channels") {
             Some(raw) if !raw.trim().is_empty() => parse_sources(&raw)?,
-            _ if account.is_none() => parse_sources(default_channels)?,
             _ => Vec::new(),
         };
         if sources.is_empty() && account.is_none() {

@@ -473,7 +473,7 @@ fun QuickSettingsSheet(
             icon = LoungeIcons.Frame,
             title = "Salvapantallas",
             value = saverName,
-            accent = if (saverName == "Lounge") colors.signal else colors.dust,
+            accent = if (saverName == "xggLauncher") colors.signal else colors.dust,
             onClick = onAmbient,
             focusRequester = focusFor(Overlay.Ambient),
         )
@@ -516,7 +516,7 @@ fun QuickSettingsSheet(
             icon = SettingsGlyphs.Home,
             title = "Pantalla de inicio predeterminada",
             subtitle = "Lo que abre el botón Inicio (Home)",
-            value = if (isDefaultHome) "Lounge" else "Configurar",
+            value = if (isDefaultHome) "xggLauncher" else "Configurar",
             accent = if (isDefaultHome) colors.signal else colors.dust,
             onClick = onRecheckHome,
             focusRequester = focusFor(Overlay.HomeRole),
@@ -524,7 +524,7 @@ fun QuickSettingsSheet(
         SheetRow(
             icon = LoungeIcons.Power,
             title = "Configuración Avanzada (ADB)",
-            subtitle = "Permite a Lounge hacer ajustes que una app normal no puede",
+            subtitle = "Permite a xggLauncher hacer ajustes que una app normal no puede",
             value = when (powerStatus) {
                 is tv.lounge.power.PowerStatus.Ready -> "Conectado"
                 tv.lounge.power.PowerStatus.WaitingForApproval -> "Esperando tu confirmación"

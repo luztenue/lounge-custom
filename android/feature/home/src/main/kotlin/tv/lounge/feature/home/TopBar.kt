@@ -138,18 +138,17 @@ fun TopBar(
  */
 @Composable
 private fun Mark() {
-    Row {
+    Row(verticalAlignment = Alignment.CenterVertically) {
         Image(
             painterResource(tv.lounge.design.R.drawable.mark_sofa),
             contentDescription = null,
-            modifier = Modifier.width(56.dp).alignBy { (it.measuredHeight * SEAT).roundToInt() },
+            modifier = Modifier.size(36.dp).clip(RoundedCornerShape(8.dp)),
         )
-        Spacer(Modifier.width(14.dp))
+        Spacer(Modifier.width(12.dp))
         Text(
-            "Lounge",
-            style = LoungeTheme.typography.displayXl.copy(fontSize = 30.sp, lineHeight = 30.sp, letterSpacing = (-0.01).em),
+            "xggLauncher",
+            style = LoungeTheme.typography.displayXl.copy(fontSize = 28.sp, lineHeight = 28.sp, letterSpacing = (-0.01).em),
             color = LoungeTheme.colors.limelight,
-            modifier = Modifier.alignByBaseline(),
         )
     }
 }

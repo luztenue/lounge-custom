@@ -378,7 +378,7 @@ internal fun screensaverName(power: PowerSetup, context: android.content.Context
     return when {
         enabled == 0 -> "Off"
         current == null -> "El del televisor"
-        current.contains(context.packageName) -> "Lounge"
+        current.contains(context.packageName) -> "xggLauncher"
         // A label that is only a package name says nothing to a person.
         else -> power.labelFor(current).takeUnless { it.contains('.') && ' ' !in it } ?: "El del televisor"
     }
@@ -409,7 +409,7 @@ fun AmbientSheet(power: PowerSetup, prefs: Prefs, core: CoreClient, onPowerSetup
     var busy by remember { mutableStateOf(false) }
     var error by remember { mutableStateOf<String?>(null) }
     val ready = status is PowerStatus.Ready
-    val ours = name == "Lounge"
+    val ours = name == "xggLauncher"
 
     LaunchedEffect(Unit) { power.refresh() }
     LifecycleEventEffect(Lifecycle.Event.ON_RESUME) { name = screensaverName(power, context) }
@@ -439,14 +439,14 @@ fun AmbientSheet(power: PowerSetup, prefs: Prefs, core: CoreClient, onPowerSetup
                 // Lounge's own is never the one before, whatever was saved.
                 val before = prefs.previousScreensaver.first()?.takeUnless { it.contains(context.packageName) }
                 val r = power.run(power.restoreScreensaver(before, prefs.previousScreensaverEnabled.first()))
-                if (r.ok && screensaverName(power, context) != "Lounge") null else NOT_TAKEN
+                if (r.ok && screensaverName(power, context) != "xggLauncher") null else NOT_TAKEN
             }
             ready -> run {
                 val previous = power.currentScreensaver
                 val r = power.run(power.useAmbient)
                 // The one before is kept only once the switch has happened, so a failed one cannot lose
                 // it, and never when it is Lounge's own with the screensaver turned off.
-                val took = screensaverName(power, context) == "Lounge"
+                val took = screensaverName(power, context) == "xggLauncher"
                 if (took && previous?.contains(context.packageName) != true) {
                     prefs.setPreviousScreensaver(previous)
                     prefs.setPreviousScreensaverEnabled(PowerSetup.previousScreensaverEnabled(r.output))

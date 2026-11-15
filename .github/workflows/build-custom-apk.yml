@@ -64,12 +64,24 @@ jobs:
       - name: Locate and Rename APK
         run: |
           mkdir -p output
-          find android/app/build/outputs/apk -name "*.apk" -exec cp {} output/Lounge-Custom-ES.apk \;
+          find android/app/build/outputs/apk -name "*.apk" -exec cp {} output/xggLauncher.apk \;
           ls -la output/
 
       - name: Upload Custom APK Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: Lounge-Custom-ES
-          path: output/Lounge-Custom-ES.apk
+          name: xggLauncher
+          path: output/xggLauncher.apk
           if-no-files-found: error
+
+      - name: Publish Public GitHub Release
+        if: github.ref == 'refs/heads/main'
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: v1.0-xggLauncher-${{ github.run_number }}
+          name: xggLauncher (${{ github.run_number }})
+          body: |
+            Release público de **xggLauncher** (español, compacto, navegación D-Pad corregida y sin canales genéricos de respaldo).
+            Descarga directa para TV (Downloader): `xggLauncher.apk`
+          files: output/xggLauncher.apk
+          make_latest: true
